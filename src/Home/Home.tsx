@@ -21,7 +21,7 @@ const HomePage = () => {
           </div>
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8 text-gray-600 font-medium">
-            <a href="#" className="hover:text-gray-900 transition">How It Works</a>
+            <Link to="/about" className="hover:text-gray-900 transition">How It Works</Link>
             <Link to="/browse" className="hover:text-gray-900 transition">Browse Boards</Link>
           </nav>
           {/* Log In Button */}
@@ -133,9 +133,8 @@ const HomePage = () => {
           {/* Links & Social */}
           <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-12 text-gray-600">
             <div className="flex space-x-8 font-medium">
-              <a href="#" className="hover:text-gray-900 transition">About</a>
-              <a href="#" className="hover:text-gray-900 transition">Terms</a>
-              <a href="#" className="hover:text-gray-900 transition">Privacy</a>
+              <Link to="/about" className="hover:text-gray-900 transition">About</Link>
+              <Link to="/privacy-policy" className="hover:text-gray-900 transition">Privacy</Link>
             </div>
             <div className="flex space-x-6">
               <a href="#" className="text-gray-400 hover:text-blue-600 transition"><Twitter className="h-5 w-5" /></a>
