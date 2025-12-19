@@ -23,7 +23,7 @@ const LoginPage = () => {
     }
 
     console.log("Login successful:", data.user);
-    navigate('/dashboard');
+    navigate('/home');
   }
   return (
     // 1. Main Container: Centered content, light background matching the image

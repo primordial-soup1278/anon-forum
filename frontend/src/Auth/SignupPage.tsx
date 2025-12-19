@@ -16,7 +16,7 @@ const SignupPage = () => {
       return;
     }
 
-    const {data, error} = await supabase.auth.signup({
+    const {data, error} = await supabase.auth.signUp({
       email,
       password,
     });
