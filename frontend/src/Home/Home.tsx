@@ -3,8 +3,10 @@ import React from 'react';
 import { MessageCircle, Users, Lightbulb, Share2, Twitter, Instagram, Linkedin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../Auth/AuthContext';
 const HomePage = () => {
     const navigate = useNavigate();
+    const { session } = useAuth();
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
       {/* Main Card Container */}

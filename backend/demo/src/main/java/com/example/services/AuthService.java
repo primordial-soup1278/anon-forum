@@ -1,6 +1,6 @@
 package com.example.services;
 
-import com.example.models.User;
+import com.example.models.AppUser;
 import com.example.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,16 +18,15 @@ public class AuthService {
 
 
 
-    public User signup(String email, String password) {
+    public AppUser signup(String email, String password) {
         if(userRepository.existsByEmail(email)) {
            throw new RuntimeException("Email already exists");
         }
 
-        User user = new User();
-        user.setEmail(email);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setCreatedAt(LocalDateTime.now());
+        AppUser appUser = new AppUser();
+        appUser.setCreatedAt(LocalDateTime.now());
 
-        return userRepository.save(user);
+        return userRepository.save(appUser);
     }
+
 }
