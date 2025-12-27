@@ -4,9 +4,21 @@ import { MessageCircle, Users, Lightbulb, Share2, Twitter, Instagram, Linkedin }
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Auth/AuthContext';
+import { supabase } from '../Auth/supabase';
 const HomePage = () => {
     const navigate = useNavigate();
     const { session } = useAuth();
+    
+    console.log("Current session:", session);
+
+    const handleLogout = async () => {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error("Error logging out:", error.message);
+        return;
+      }
+    }
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
       {/* Main Card Container */}
@@ -26,11 +38,19 @@ const HomePage = () => {
             <Link to="/about" className="hover:text-gray-900 transition">How It Works</Link>
             <Link to="/browse" className="hover:text-gray-900 transition">Browse Boards</Link>
           </nav>
-          {/* Log In Button */}
-          <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm"
-          onClick={() => navigate("/login")}>
-            Log In
-          </button>
+          {
+            !session ? (
+              <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm"
+              onClick={() => navigate("/login")}>
+                Log In
+              </button>
+          ) : (
+            <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm"
+              onClick={() => handleLogout()}>
+                Log out 
+              </button>
+          )
+          }
         </header>
 
         {/* --- Hero Section --- */}
