@@ -1,36 +1,53 @@
-package com.example.models;
+package com.example.demo.DTO;
 
-import jakarta.persistence.*;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-public class Board {
-    @Id
-    @GeneratedValue
+@Service
+public class BoardDTO {
     private Long id;
-
-    // stores supabase uuid directly
-    @Column(name = "owner_id", nullable = false)
-    private String ownerId; // supabase uuid
-
+    private String ownerId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private String name;
-
-    @ElementCollection
     private List<String> categories;
 
+    private String description;
+
     /* will contain user id's */
-    @ElementCollection
     private List<String> members;
 
+    public BoardDTO() {}
 
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
+    public BoardDTO(
+            Long id,
+            String ownerId,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt,
+            String name,
+            ArrayList<String> categories,
+            ArrayList<String> members,
+            String description)
+    {
+        this.id = id;
+        this.ownerId = ownerId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.name = name;
+        this.categories = categories;
+        this.members = members;
+        this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
     public String getOwnerId() {return ownerId;}
     public void setOwnerId(String ownerId) {this.ownerId = ownerId;}
     public LocalDateTime getCreatedAt() {return createdAt;}
@@ -43,5 +60,6 @@ public class Board {
     public void setCategories(List<String> categories) {this.categories = categories;}
     public List<String> getMembers() {return members;}
     public void setMembers(List<String> members) {this.members = members;}
-
+    public void setDescription (String description) {this.description = description;}
+    public String getDescription() {return description;}
 }

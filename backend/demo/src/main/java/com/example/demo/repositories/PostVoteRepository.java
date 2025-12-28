@@ -1,13 +1,12 @@
-package com.example.repositories;
+package com.example.demo.repositories;
 
-import com.example.models.AppUser;
-import com.example.models.Post;
-import com.example.models.PostVote;
+import com.example.demo.models.Post;
+import com.example.demo.models.PostVote;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
 public interface PostVoteRepository extends JpaRepository<PostVote, Long> {
     Long countByPostAndType(Post post, PostVote.VoteType type);
-    Optional<PostVote> findByUserAndPost(AppUser user, Post post);
+    Optional<PostVote> findByUserIDAndPost(String userID, Post post);
 }

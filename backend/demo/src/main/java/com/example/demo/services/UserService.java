@@ -1,7 +1,7 @@
-package com.example.services;
+/*package com.example.demo.services;
 
-import com.example.models.AppUser;
-import com.example.repositories.UserRepository;
+import com.example.demo.models.AppUser;
+import com.example.demo.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,8 +16,9 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public AppUser getUserById(Long id) {
+    public AppUser getUserById(String id) {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
 }
+*/

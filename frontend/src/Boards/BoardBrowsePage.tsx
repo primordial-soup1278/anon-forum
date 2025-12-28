@@ -1,7 +1,9 @@
 import React from 'react';
-import { MessageCircle, Search, ChevronDown, User, Plus } from 'lucide-react';
+import { MessageCircle, Search, ChevronDown, User, Plus, Superscript } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
+import { useAuth } from '../Auth/AuthContext';
+import { supabase } from '../Auth/supabase';
 const BoardBrowsePage = () => {
   // Mock data for the board cards
   const boards = [
@@ -49,6 +51,16 @@ const BoardBrowsePage = () => {
     );
   };
 
+  const handleLogout = async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Error logging out:", error.message);
+        return;
+      }
+  }
+
+  const {session} = useAuth();
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       
@@ -75,10 +87,20 @@ const BoardBrowsePage = () => {
                 <User className="h-5 w-5 text-gray-600" />
             </div>*/}
             {/* Log In Button */}
-            <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm"
-            onClick={() => navigate("/login")}>
-              Log In
-            </button>
+            {
+              !session ? (
+              <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm"
+              onClick={() => navigate("/login")}>
+                Log In
+              </button>
+              ) : (
+                <button className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition shadow-sm"
+                onClick={() => handleLogout()}>
+                  Log Out 
+                </button>
+              )
+            }
+            
           </div>
         </div>
       </header>

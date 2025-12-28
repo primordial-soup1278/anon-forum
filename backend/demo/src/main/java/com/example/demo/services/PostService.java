@@ -1,31 +1,24 @@
-package com.example.services;
+package com.example.demo.services;
 
-import com.example.DTO.CommentDTO;
-import com.example.DTO.PostDTO;
-import com.example.DTO.PostVoteDTO;
-import com.example.models.AppUser;
-import com.example.models.Board;
-import com.example.models.Post;
-import com.example.models.PostVote;
-import com.example.repositories.BoardRepository;
-import com.example.repositories.PostRepository;
-import com.example.repositories.PostVoteRepository;
-import com.example.repositories.UserRepository;
-import org.apache.catalina.User;
+import com.example.demo.DTO.CommentDTO;
+import com.example.demo.DTO.PostDTO;
+import com.example.demo.DTO.PostVoteDTO;
+import com.example.demo.models.Board;
+import com.example.demo.models.Post;
+import com.example.demo.models.PostVote;
+import com.example.demo.repositories.BoardRepository;
+import com.example.demo.repositories.PostRepository;
+import com.example.demo.repositories.PostVoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PostService {
     @Autowired
     private PostRepository postRepository;
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private BoardRepository boardRepository;
     @Autowired
@@ -37,21 +30,21 @@ public class PostService {
             throw new RuntimeException("Illegal access");
         }
         // Load current user from JWT
-        AppUser currentUser = userRepository.findById(jwt.getSubject())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        String userID =  jwt.getSubject();
+        /*AppUser currentUser = userRepository.findById(jwt.getSubject())
+                .orElseThrow(() -> new RuntimeException("User not found"));*/
 
-        return postRepository.findPostsByPosterId(id)
+        return postRepository.findPostsByAuthorID(id)
                 .stream()
-                .map(post -> toDTO(post, currentUser))
+                .map(post -> toDTO(post, userID))
                 .toList();
     }
 
     public List<PostDTO> getPostsByBoardId(Long id, Jwt jwt) {
-        AppUser currentUser = userRepository.findById(jwt.getSubject())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        String currentUserID =  jwt.getSubject();
         return postRepository.findPostsByBoardId(id)
                 .stream()
-                .map(post -> toDTO(post, currentUser))
+                .map(post -> toDTO(post, currentUserID))
                 .toList();
     }
 
@@ -68,26 +61,27 @@ public class PostService {
 
     public PostDTO createPost(PostDTO postDTO, Jwt jwt) {
         String userId = jwt.getSubject();
-        AppUser appUser = userRepository.findById(userId)
-                .orElseGet(() -> userRepository.save(new AppUser()));
+        /*AppUser appUser = userRepository.findById(userId)
+                .orElseGet(() -> userRepository.save(new AppUser()));*/
         Board board = boardRepository.findById(postDTO.getBoardId())
                 .orElseThrow(() -> new RuntimeException("Board with id " + postDTO.getBoardId() + " does not exist"));
         Post post = new Post();
         post.setTitle(postDTO.getTitle());
         post.setMessage(postDTO.getMessage());
-        post.setAuthor(appUser);
+        post.setAuthor(userId);
         post.setBoard(board);
         Post saved = postRepository.save(post);
-        AppUser currentUser = userRepository.findById(jwt.getSubject())
-                .orElseThrow(() -> new RuntimeException("User with id " + jwt.getSubject() + " does not exist"));
-        return toDTO(saved, currentUser);
+        /*AppUser currentUser = userRepository.findById(jwt.getSubject())
+                .orElseThrow(() -> new RuntimeException("User with id " + jwt.getSubject() + " does not exist"));*/
+        String currentUserID =  jwt.getSubject();
+        return toDTO(saved, currentUserID);
     }
 
 
-    private PostDTO toDTO(Post post, AppUser currentUser) {
+    private PostDTO toDTO(Post post, String currentUserID) {
         long upVotes = postVoteRepository.countByPostAndType(post, PostVote.VoteType.UPVOTE);
         long downVotes = postVoteRepository.countByPostAndType(post, PostVote.VoteType.DOWNVOTE);
-        PostVoteDTO userVote = postVoteRepository.findByUserAndPost(currentUser, post)
+        PostVoteDTO userVote = postVoteRepository.findByUserIDAndPost(currentUserID, post)
                 .map(v -> new PostVoteDTO(
                         post.getId(),
                         v.getType() == PostVote.VoteType.UPVOTE,

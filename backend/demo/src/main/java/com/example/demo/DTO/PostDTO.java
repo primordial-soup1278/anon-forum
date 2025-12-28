@@ -1,11 +1,4 @@
-package com.example.DTO;
-
-import org.springframework.cglib.core.Local;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+package com.example.demo.DTO;
 
 import java.time.LocalDateTime;
 import java.util.List;

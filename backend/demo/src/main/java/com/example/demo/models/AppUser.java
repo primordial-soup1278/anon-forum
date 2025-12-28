@@ -1,11 +1,11 @@
-package com.example.models;
+package com.example.demo.models;
 
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-@Entity
+/*@Entity
 @Table(name = "app_user")
 public class AppUser {
 
@@ -26,4 +26,4 @@ public class AppUser {
 
     public LocalDateTime getCreatedAt() { return createdAt;}
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-}
+}*/

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { MessageCircle, Check, Plus, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import type { createBoardRequest } from './Board';
+import { createBoard } from './requests';
 
 const CreateBoardPage = () => {
   const [boardName, setBoardName] = useState('');
@@ -19,7 +21,7 @@ const CreateBoardPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // --- Category Handlers ---
-  const addCategory = (e) => {
+  const addCategory = (e : any) => {
     if (e) e.preventDefault(); // Prevent form submission if triggered by button
     
     const trimmedInput = categoryInput.trim();
@@ -33,26 +35,44 @@ const CreateBoardPage = () => {
     }
   };
 
-  const removeCategory = (categoryToRemove) => {
+  const removeCategory = (categoryToRemove : any) => {
     setSelectedCategories(selectedCategories.filter(cat => cat !== categoryToRemove));
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e : any) => {
     if (e.key === 'Enter') {
       e.preventDefault(); // Stop form from submitting
       addCategory();
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     console.log('Creating board with:', { boardName, description, customUrl, selectedCategories, privacy });
     
-    setTimeout(() => {
+    try {
+      const boardData: createBoardRequest = {
+        name: boardName,
+        description: description,
+        categories: selectedCategories,
+        members: []
+      };
+      console.log("BOARD: ", boardData);
+      await createBoard(boardData)
+    }
+    catch (error) {
+      console.error("Error creating board:", error)
+    }
+    finally {
+      setIsSubmitting(false);
+    }
+
+    // Simulate API call
+    /*setTimeout(() => {
       alert(`Board '${boardName}' created with categories: ${selectedCategories.join(', ')}`);
       setIsSubmitting(false);
-    }, 1500);
+    }, 1500);*/
   };
 
   const handleUrlChange = (e) => {

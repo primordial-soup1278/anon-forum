@@ -1,4 +1,4 @@
-package com.example.models;
+package com.example.demo.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,9 +15,7 @@ public class Post {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "author_id")
-    private AppUser author;
+    private String authorID;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "board_id")
@@ -36,7 +34,7 @@ public class Post {
     private LocalDateTime updatedAt;
 
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "post")
     private List<PostVote> votes = new ArrayList<>();
 
 
@@ -45,8 +43,8 @@ public class Post {
 
     public Post() {}
 
-    public Post(AppUser author, Board board, String title, String message) {
-        this.author = author;
+    public Post(String authorID, Board board, String title, String message) {
+        this.authorID = authorID;
         this.board = board;
         this.title = title;
         this.message = message;
@@ -54,7 +52,7 @@ public class Post {
 
     // getters
     public Long getId() { return id; }
-    public AppUser getAuthor() { return author; }
+    public String getAuthor() { return authorID; }
     public Board getBoard() { return board; }
     public String getTitle() { return title; }
     public String getMessage() { return message; }
@@ -66,6 +64,6 @@ public class Post {
     // setters if necessary for title/message updates
     public void setTitle(String title) { this.title = title; }
     public void setMessage(String message) { this.message = message; }
-    public void setAuthor(AppUser author) { this.author = author; }
+    public void setAuthor(String authorID) { this.authorID = authorID; }
     public void setBoard(Board board) { this.board = board; }
 }

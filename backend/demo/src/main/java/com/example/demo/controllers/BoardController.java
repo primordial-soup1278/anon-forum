@@ -1,9 +1,7 @@
-package com.example.controllers;
+package com.example.demo.controllers;
 
-import com.example.DTO.BoardDTO;
-import com.example.models.Board;
-import com.example.repositories.BoardRepository;
-import com.example.services.BoardService;
+import com.example.demo.DTO.BoardDTO;
+import com.example.demo.services.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +30,16 @@ public class BoardController {
 
     @PostMapping("/create-board")
     public ResponseEntity<BoardDTO> createBoard(@RequestBody BoardDTO board, @AuthenticationPrincipal Jwt jwt) {
+        System.out.println("Received DTO: " + board);
+        System.out.println("JWT Subject: " + (jwt != null ? jwt.getSubject() : "null"));
         try {
             BoardDTO boardDTO = boardService.createBoard(board, jwt);
             return ResponseEntity.ok(boardDTO);
         }
         catch (Exception e) {
-           return  ResponseEntity.badRequest().build();
+            System.err.println("Error creating board: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
         }
     }
 

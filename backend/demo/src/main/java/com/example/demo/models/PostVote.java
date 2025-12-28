@@ -1,4 +1,4 @@
-package com.example.models;
+package com.example.demo.models;
 
 import jakarta.persistence.*;
 
@@ -9,8 +9,7 @@ public class PostVote {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(optional = false)
-    private AppUser user;
+    private String userID;
 
     @ManyToOne(optional = false)
     private Post post;

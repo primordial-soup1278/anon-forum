@@ -1,4 +1,4 @@
-package com.example.models;
+package com.example.demo.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,8 +15,7 @@ public class Comment {
     @ManyToOne(optional = false)
     private Post post;
 
-    @ManyToOne(optional = false)
-    private AppUser author;
+    private String authorID;
 
     @Column(nullable = false)
     private String message;
@@ -25,7 +24,7 @@ public class Comment {
     private LocalDateTime createdAt;
 
     public Comment() {}
-    public Comment(Post post, AppUser author, String message) {}
+    public Comment(Post post, String authorID, String message) {}
 
     public Long getId() {
         return id;

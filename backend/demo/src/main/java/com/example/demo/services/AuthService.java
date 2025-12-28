@@ -1,7 +1,7 @@
-package com.example.services;
+package com.example.demo.services;
 
-import com.example.models.AppUser;
-import com.example.repositories.UserRepository;
+/*import com.example.demo.models.AppUser;
+import com.example.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,3 +30,4 @@ public class AuthService {
     }
 
 }
+*/

@@ -1,8 +1,8 @@
-package com.example.services;
+package com.example.demo.services;
 
-import com.example.DTO.BoardDTO;
-import com.example.models.Board;
-import com.example.repositories.BoardRepository;
+import com.example.demo.DTO.BoardDTO;
+import com.example.demo.models.Board;
+import com.example.demo.repositories.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class BoardService {
 
         // supposed to be anonymous I don't want other users to be able to tell
         // who owns the board
-        return boardRepository.getBoardsByPosterId(jwt.getSubject())
+        return boardRepository.getBoardsByOwnerId(jwt.getSubject())
                 .stream()
                 .map(this::toDTO)
                 .toList();
@@ -68,16 +68,14 @@ public class BoardService {
 
     public BoardDTO createBoard(BoardDTO boardDTO, Jwt jwt) {
 
-        if (!jwt.getSubject().equals(String.valueOf(boardDTO.getOwnerId()))) {
-            throw new RuntimeException("Forbidden");
-        }
         Board board = new Board();
         board.setId(boardDTO.getId());
-        board.setOwnerId(jwt.getSubject());
+        board.setOwnerId(jwt.getSubject()); // Set owner from authenticated user
         board.setCreatedAt(LocalDateTime.now());
         board.setName(boardDTO.getName());
         board.setCategories(boardDTO.getCategories());
         board.setMembers(boardDTO.getMembers());
+        board.setDescription(boardDTO.getDescription());
         Board saved = boardRepository.save(board);
         return toDTO(saved);
     }
