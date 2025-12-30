@@ -17,7 +17,17 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
-    @GetMapping("/{ownerId}/get-board")
+    @GetMapping("/get-all-board")
+    public ResponseEntity<List<BoardDTO>> getAllBoard() {
+        try {
+           List<BoardDTO> boards = boardService.getAllBoards();
+           return ResponseEntity.ok(boards);
+        }
+        catch(Exception e) {
+           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    @GetMapping("/{ownerId}/get-user-boards")
     public ResponseEntity<List<BoardDTO>> getBoard(@AuthenticationPrincipal Jwt jwt) {
         try {
             List<BoardDTO> boards = boardService.getBoardsByOwnerId(jwt);

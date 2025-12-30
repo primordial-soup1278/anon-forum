@@ -23,6 +23,11 @@ public class Board {
     private String name;
 
     @ElementCollection
+    @CollectionTable(
+            name = "board_categories",
+            joinColumns = @JoinColumn(name = "board_id")
+    )
+    @Column(name = "categories")
     private List<String> categories;
 
     /* will contain user id's */

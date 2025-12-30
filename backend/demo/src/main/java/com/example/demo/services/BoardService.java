@@ -20,11 +20,15 @@ public class BoardService {
     public Optional<BoardDTO> getBoard(Long id) {
         return boardRepository.findById(id).map(this::toDTO);
     }
+    public List<BoardDTO> getAllBoards() {
+
+        return boardRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
 
     public List<BoardDTO> getBoardsByOwnerId(Jwt jwt) {
-
-        // supposed to be anonymous I don't want other users to be able to tell
-        // who owns the board
         return boardRepository.getBoardsByOwnerId(jwt.getSubject())
                 .stream()
                 .map(this::toDTO)
@@ -95,8 +99,11 @@ public class BoardService {
         dto.setId(board.getId());
         dto.setName(board.getName());
         dto.setOwnerId(board.getOwnerId());
+        dto.setDescription(board.getDescription());
         dto.setCategories(board.getCategories());
         dto.setMembers(board.getMembers());
+        dto.setCreatedAt(board.getCreatedAt());
+        dto.setUpdatedAt(board.getUpdatedAt());
         return dto;
     }
 }

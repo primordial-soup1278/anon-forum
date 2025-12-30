@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   MessageCircle, 
   ArrowUp, 
@@ -12,14 +12,36 @@ import {
 import { useParams, Link } from 'react-router-dom'; // Added Link for nav
 import { boardsData } from './mockBoards';
 import { useNavigate } from 'react-router-dom';
-
+import { getBoardById } from './requests';
+import type { Board } from './Board';
 const BoardHomePage = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const { boardId } = useParams();
   const navigate = useNavigate();
+  const [board, setBoard] = useState<Board>();
+  
+  console.log("BOARD ID FROM PARAMS: ", boardId);
 
   // Find the board info based on the URL ID
-  const board = boardsData.find(b => b.id.toString() === boardId);
+  //const board = boardsData.find(b => b.id.toString() === boardId);
+  
+  useEffect(() => {
+    const fetchBoardData = async () => {
+      if (boardId) {
+        try {
+          const data = await getBoardById(Number(boardId));
+          console.log("FETCHED BOARD DATA: ", data);
+          setBoard(data);
+          // You can set this data to state if needed
+        } catch (error) {
+          console.error("Error fetching board data:", error);
+        }
+      }
+    }
+
+      fetchBoardData();
+  },[]);
+  console.log("BOARD DATA FOUND: ", board);
 
   // Mock data for feedback posts
   const feedbackPosts = [
@@ -92,7 +114,7 @@ const BoardHomePage = () => {
         <aside className="w-full md:w-64 space-y-6">
           {/* DYNAMIC Board Info */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <h1 className="text-xl font-bold text-gray-900 mb-2">{board.title}</h1>
+            <h1 className="text-xl font-bold text-gray-900 mb-2">{board.name}</h1>
             <p className="text-sm text-gray-500 mb-4">
               {board.description}
             </p>
@@ -113,7 +135,7 @@ const BoardHomePage = () => {
               Categories
             </h3>
             <div className="flex flex-wrap gap-2">
-              {['All', 'Feature Request', 'Bug Report', 'General'].map((cat) => (
+              {board.categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveFilter(cat)}

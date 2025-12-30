@@ -1,14 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, MessageCircle, Send, ShieldCheck, Info } from 'lucide-react';
 import { boardsData } from '../Boards/mockBoards'; // Ensure path is correct
-
+import { getBoardById } from '../Boards/requests';
+import type { Board } from '../Boards/Board';
 const CreatePostPage = () => {
   const { boardId } = useParams();
   const navigate = useNavigate();
   
+  const [board, setBoard] = useState<Board>();
   // Find the board to display its name
-  const board = boardsData.find(b => b.id.toString() === boardId);
+  //const board = boardsData.find(b => b.id.toString() === boardId);
+
+  useEffect(() => {
+    const fetchBoardData = async () => {
+      if (boardId) {
+        try {
+          const data = await getBoardById(Number(boardId));
+          console.log("FETCHED BOARD DATA: ", data);
+          setBoard(data);
+          // You can set this data to state if needed
+        } catch (error) {
+          console.error("Error fetching board data:", error);
+        }
+      }
+    }
+    fetchBoardData();
+  },[]);
 
   // Form State
   const [title, setTitle] = useState('');
@@ -16,7 +34,7 @@ const CreatePostPage = () => {
   const [category, setCategory] = useState('Feature Request');
   const [isAgreed, setIsAgreed] = useState(false);
 
-  const categories = ['Feature Request', 'Bug Report', 'Improvement', 'General'];
+  const categories = board?.categories;
 
   const handleSubmit = (e : any) => {
     e.preventDefault();
@@ -52,7 +70,7 @@ const CreatePostPage = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-extrabold text-slate-900 mb-2">Create a New Post</h1>
             <p className="text-slate-400 font-medium flex items-center">
-              Posting to: <span className="text-slate-600 ml-1">{board.title}</span> 
+              Posting to: <span className="text-slate-600 ml-1">{board.name}</span> 
               <span className="ml-2 text-[10px] bg-slate-100 px-2 py-0.5 rounded-full uppercase tracking-tighter">Anonymous</span>
             </p>
           </div>

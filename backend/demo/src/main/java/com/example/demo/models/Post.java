@@ -38,7 +38,11 @@ public class Post {
     private List<PostVote> votes = new ArrayList<>();
 
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Comment> comments = new ArrayList<>();
 
     public Post() {}

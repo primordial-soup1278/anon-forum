@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import { useAuth } from '../Auth/AuthContext';
 import { supabase } from '../Auth/supabase';
+import { useEffect, useState } from 'react';
+import { getAllBoards } from './requests';
+import type { Board } from './Board';
 const BoardBrowsePage = () => {
   // Mock data for the board cards
-  const boards = [
+  /*const boards = [
     { id : 1, title: "Product ideas V.3 2024", description: "Ideas and marketing site.", posts: 43, color: "blue" },
     { id : 2, title: "Remote Work Policies", description: "Ideas and bugs for marketing site.", posts: 48, color: "green" },
     { id : 3, title: "Remote Culture Q&AA", description: "Ideas and Iiteen IOS/Android", posts: 135, color: "orange" },
@@ -16,7 +19,7 @@ const BoardBrowsePage = () => {
     { id : 7, title: "Obrile App Feedback", description: "Coare undoen.ba.t.rats us wslite", posts: 305, color: "blue" },
     { id : 8, title: "Office Amenities", description: "Fhhr #mcblet aiits", posts: "1.2K", color: "red" },
     { id : 9, title: "Community Suggestions", description: "Pe.newicdle sungite ant owidiss", posts: "1.2K", color: "red" },
-  ];
+  ];*/
   const navigate = useNavigate();
 
   const getColorClasses = (color) => {
@@ -30,7 +33,7 @@ const BoardBrowsePage = () => {
   };
 
   const BoardCard = ({ board }) => {
-    const { badge, check } = getColorClasses(board.color);
+    const { badge, check } = getColorClasses("blue");
     
     return (
       <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-100 flex flex-col justify-between">
@@ -39,13 +42,9 @@ const BoardBrowsePage = () => {
             <div className={`p-1.5 rounded-lg ${badge}`}>
               <MessageCircle className="w-4 h-4" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{board.title}</h3>
+            <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{board.name}</h3>
           </div>
           <p className="text-sm text-gray-500 mb-3 line-clamp-2">{board.description}</p>
-        </div>
-        <div>
-          <p className="text-sm font-semibold text-gray-700">{board.posts} posts</p>
-          <p className="text-xs text-gray-400 mt-0.5">{board.posts} posts</p>
         </div>
       </div>
     );
@@ -60,6 +59,23 @@ const BoardBrowsePage = () => {
   }
 
   const {session} = useAuth();
+
+  const [boardData, setBoardData] = useState<Board[]>([]);
+  useEffect(() => {
+    const fetchBoards = async () => {
+      console.log("Fetching boards...");
+      try {
+        const boards : Board[] = await getAllBoards();
+        console.log("Fetched boards:", boards);
+        setBoardData(boards);
+      }
+      catch (error) {
+        console.error("Error fetching boards:", error);
+      }
+    }
+
+    fetchBoards();
+  },[]);
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -148,7 +164,7 @@ const BoardBrowsePage = () => {
 
         {/* --- Boards Grid --- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {boards.map((board) => (
+          {boardData.map((board) => (
             <Link to={`/board/${board.id}`} key={board.id}>
                 <BoardCard board={board} />
             </Link>
