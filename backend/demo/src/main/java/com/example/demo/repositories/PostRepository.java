@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post,Long> {
-    List<Post> findPostsByAuthorID(Long id);
+    List<Post> findPostsByAuthorId(Long id);
 
     List<Post> findPostsByBoardId(Long id);
 }

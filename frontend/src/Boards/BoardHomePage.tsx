@@ -194,9 +194,7 @@ const BoardHomePage = () => {
                     <span className="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase rounded tracking-wide">
                       {post.category}
                     </span>
-                    <span className="px-2 py-1 bg-orange-50 text-orange-600 text-[10px] font-bold uppercase rounded tracking-wide">
-                      {post.status}
-                    </span>
+                    
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer transition">
                     {post.title}
@@ -204,10 +202,6 @@ const BoardHomePage = () => {
                   <p className="text-gray-600 line-clamp-2 mb-4">
                     {post.description}
                   </p>
-                  <div className="flex items-center text-gray-400 text-sm font-medium">
-                    <MessageSquare className="w-4 h-4 mr-1.5" />
-                    {post.comments} comments
-                  </div>
                 </div>
                 </Link>
 

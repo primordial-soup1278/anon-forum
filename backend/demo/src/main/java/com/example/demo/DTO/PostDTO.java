@@ -15,10 +15,12 @@ public class PostDTO {
     private long downVotes;
     private PostVoteDTO userVote; // current user's vote
     private List<CommentDTO> comments;
+    private String category;
 
     public PostDTO(Long id, Long boardId, String title, String message,
                    LocalDateTime createdAt, LocalDateTime updatedAt,
                    long upVotes, long downVotes,
+                   String category,
                    PostVoteDTO userVote, List<CommentDTO> comments) {
         this.id = id;
         this.boardId = boardId;
@@ -29,10 +31,12 @@ public class PostDTO {
         this.upVotes = upVotes;
         this.downVotes = downVotes;
         this.userVote = userVote;
+        this.category = category;
         this.comments = comments;
     }
 
     // getters
+    public String getCategory() { return this.category; }
     public Long getId() { return id; }
     public Long getBoardId() { return boardId; }
     public String getTitle() { return title; }

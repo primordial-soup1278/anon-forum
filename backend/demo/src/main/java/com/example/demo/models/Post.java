@@ -15,7 +15,8 @@ public class Post {
     @GeneratedValue
     private Long id;
 
-    private String authorID;
+    @Column(name = "author_id", nullable = false)
+    private String authorId;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "board_id")
@@ -37,6 +38,7 @@ public class Post {
     @OneToMany(mappedBy = "post")
     private List<PostVote> votes = new ArrayList<>();
 
+    private String category;
 
     @OneToMany(
             mappedBy = "post",
@@ -47,8 +49,8 @@ public class Post {
 
     public Post() {}
 
-    public Post(String authorID, Board board, String title, String message) {
-        this.authorID = authorID;
+    public Post(String authorId, Board board, String title, String message) {
+        this.authorId = authorId;
         this.board = board;
         this.title = title;
         this.message = message;
@@ -56,7 +58,7 @@ public class Post {
 
     // getters
     public Long getId() { return id; }
-    public String getAuthor() { return authorID; }
+    public String getAuthorId() { return authorId; }
     public Board getBoard() { return board; }
     public String getTitle() { return title; }
     public String getMessage() { return message; }
@@ -64,10 +66,12 @@ public class Post {
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public List<Comment> getComments() { return comments; }
     public List<PostVote> getVotes() { return votes; }
+    public String getCategory() { return category;}
     public void setVotes(List<PostVote> votes) { this.votes = votes; }
     // setters if necessary for title/message updates
+    public void setCategory(String category) { this.category = category;}
     public void setTitle(String title) { this.title = title; }
     public void setMessage(String message) { this.message = message; }
-    public void setAuthor(String authorID) { this.authorID = authorID; }
+    public void setAuthorId(String authorId) { this.authorId = authorId; }
     public void setBoard(Board board) { this.board = board; }
 }

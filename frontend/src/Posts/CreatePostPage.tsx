@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, MessageCircle, Send, ShieldCheck, Info } from 'lucide-react';
-import { boardsData } from '../Boards/mockBoards'; // Ensure path is correct
+//import { boardsData } from '../Boards/mockBoards'; // Ensure path is correct
 import { getBoardById } from '../Boards/requests';
+import type { createPostRequest } from './Post';
+import { createPost } from './requests';
 import type { Board } from '../Boards/Board';
 const CreatePostPage = () => {
   const { boardId } = useParams();
@@ -32,19 +34,30 @@ const CreatePostPage = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Feature Request');
-  const [isAgreed, setIsAgreed] = useState(false);
 
   const categories = board?.categories;
 
-  const handleSubmit = (e : any) => {
+  const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!isAgreed) return alert("Please agree to the guidelines.");
-    
-    console.log("Submitting Post:", { title, description, category, boardId });
-    // After logic, go back to the board
-    navigate(`/board/${boardId}`);
-  };
+    try {
+      console.log("Submitting Post:", { title, description, category, boardId });
+      const postData : createPostRequest = {
+        boardId : Number(boardId),
+        title : title,
+        message : description,
+        category : category,
+      };
+      console.log("POST DATA TO SEND: ", postData);
+      await createPost(Number(boardId), postData);
 
+    }
+    catch (error) {
+      console.error("Error creating post:", error);
+    }
+    
+    // After logic, go back to the board
+    //navigate(`/board/${boardId}`);
+  };
   if (!board) return <div className="p-10 text-center">Board not found.</div>;
 
   return (
@@ -127,7 +140,7 @@ const CreatePostPage = () => {
               <div className="flex flex-col sm:flex-row gap-4">
                 
                 <button 
-                  type="button"
+                  type="submit"
                   className="flex-1 bg-slate-100 text-slate-500 py-4 rounded-2xl font-bold hover:bg-slate-200 transition"
                 >
                   Post Anonymously
