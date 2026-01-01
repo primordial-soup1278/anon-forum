@@ -99,7 +99,7 @@ public class PostService {
                     .orElse(new PostVoteDTO(post.getId(), false, false));
         }
         List<CommentDTO> commentDTOs = post.getComments().stream()
-                .map(c -> new CommentDTO(c.getId(), c.getContent(), c.getCreatedAt()))
+                .map(c -> new CommentDTO(c.getId(), c.getContent(), c.getCreatedAt(), currentUserID))
                 .toList();
         return new PostDTO(
                 post.getId(),
