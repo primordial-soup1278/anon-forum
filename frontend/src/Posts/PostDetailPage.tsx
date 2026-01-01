@@ -10,20 +10,51 @@ import {
   Clock
 } from 'lucide-react';
 import { boardsData } from '../Boards/mockBoards';
-
+import {useEffect}  from 'react';
+import type { post } from './Post';
+import { getPostById } from './requests';
+import { getBoardById } from '../Boards/requests';
+import type { board } from '../Boards/Board';
 const PostDetailPage = () => {
   const { boardId, postId } = useParams();
   const navigate = useNavigate();
   const [comment, setComment] = useState('');
-
+  const [postData, setPostData] = useState<post>();
+  const [board, setBoard] = useState<board>();
   // 1. Find the board context
-  const board = boardsData.find(b => b.id.toString() === boardId);
+  //const board = boardsData.find(b => b.id.toString() === boardId);
 
+  useEffect(() => {
+    const fetchBoardData = async () => {
+      try {
+        if (boardId) {
+          const data = await getBoardById(Number(boardId));
+          setBoard(data);
+        }
+      }
+      catch(e) {
+        console.error("Error in fetchBoardData: ", e);
+      }
+    };
+
+    const fetchPostData = async () => {
+      try {
+        const data = await getPostById(Number(postId));
+        setPostData(data);
+      }
+      catch(error) {
+        console.error("Error fetching post data:", error);
+      }
+    };
+    fetchBoardData();
+    fetchPostData();
+
+  },[]);
   // 2. Mock Data for this specific post (In a real app, fetch based on postId)
-  const post = {
+  /*const post = {
     id: postId,
     title: "Add dark mode to the dashboard",
-    description: "It would be great to have a dark mode option for late-night work sessions. The current white interface is quite bright and causes eye strain after long periods. A system-level preference sync would be ideal.",
+    message: "It would be great to have a dark mode option for late-night work sessions. The current white interface is quite bright and causes eye strain after long periods. A system-level preference sync would be ideal.",
     upvotes: 42,
     category: "Feature Request",
     status: "In Progress",
@@ -33,7 +64,7 @@ const PostDetailPage = () => {
       { id: 2, user: "ANON", text: "Please make it sync with the OS settings if possible!", time: "18 hours ago" },
       { id: 3, user: "ANON", text: "Thanks for the feedback! We've added this to our roadmap for Q3.", time: "5 hours ago", isAdmin: true },
     ]
-  };
+  };*/
 
   const handleCommentSubmit = (e) => {
     e.preventDefault();
@@ -43,7 +74,9 @@ const PostDetailPage = () => {
   };
 
   if (!board) return <div className="p-10 text-center">Board not found.</div>;
-
+  if (!postData) {
+    return <div className="p-10 text-center">Loading post...</div>;
+  }
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
       
@@ -105,7 +138,7 @@ const PostDetailPage = () => {
             <div className="flex flex-col items-center">
               <button className="p-3 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 transition flex flex-col items-center scale-110">
                 <ArrowUp className="w-6 h-6" />
-                <span className="text-lg font-bold mt-1">{post.upvotes}</span>
+                <span className="text-lg font-bold mt-1">{postData.upVotes}</span>
               </button>
             </div>
 
@@ -114,22 +147,22 @@ const PostDetailPage = () => {
               {/* Metadata */}
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold uppercase rounded-full tracking-wide">
-                  {post.category}
+                  {postData.category}
                 </span>
                 <span className="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold uppercase rounded-full tracking-wide flex items-center">
                   <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
-                  {post.status}
+                  {postData.status}
                 </span>
                 <span className="flex items-center text-gray-400 text-sm font-medium ml-auto">
-                  <Clock className="w-4 h-4 mr-1.5" /> {post.createdAt}
+                  <Clock className="w-4 h-4 mr-1.5" /> {postData.createdAt}
                 </span>
               </div>
 
               <h1 className="text-3xl font-extrabold text-gray-900 mb-4 leading-tight">
-                {post.title}
+                {postData.title}
               </h1>
               <p className="text-gray-700 text-lg leading-relaxed mb-6">
-                {post.description}
+                {postData.message}
               </p>
             </div>
           </div>
@@ -138,7 +171,7 @@ const PostDetailPage = () => {
           <div>
             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
               <MessageSquare className="w-5 h-5 mr-2" />
-              Discussion ({post.comments.length})
+              Discussion ({postData.comments.length})
             </h3>
 
             {/* Comment Input */}
@@ -156,9 +189,9 @@ const PostDetailPage = () => {
               </button>
             </form>
 
-            {/* Comments List */}
+            {/* Comments List 
             <div className="space-y-4">
-              {post.comments.map((comment) => (
+              {postData.comments.map((comment) => (
                 <div key={comment.id} className={`p-6 rounded-2xl border ${comment.isAdmin ? 'bg-blue-50 border-blue-100' : 'bg-white border-gray-100 shadow-sm'}`}>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-2">
@@ -174,7 +207,7 @@ const PostDetailPage = () => {
                   <p className={`leading-relaxed ${comment.isAdmin ? 'text-blue-900' : 'text-gray-700'}`}>{comment.text}</p>
                 </div>
               ))}
-            </div>
+            </div>*/}
           </div>
 
         </section>

@@ -10,15 +10,18 @@ import {
   AlertCircle // Added missing icon
 } from 'lucide-react';
 import { useParams, Link } from 'react-router-dom'; // Added Link for nav
-import { boardsData } from './mockBoards';
+import type { post } from '../Posts/Post';
 import { useNavigate } from 'react-router-dom';
 import { getBoardById } from './requests';
+import { getPostsByBoardId } from '../Posts/requests';
+
 import type { Board } from './Board';
 const BoardHomePage = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const { boardId } = useParams();
   const navigate = useNavigate();
   const [board, setBoard] = useState<Board>();
+  const [posts, setPosts] = useState<post[]>([]);
   
   console.log("BOARD ID FROM PARAMS: ", boardId);
 
@@ -30,7 +33,6 @@ const BoardHomePage = () => {
       if (boardId) {
         try {
           const data = await getBoardById(Number(boardId));
-          console.log("FETCHED BOARD DATA: ", data);
           setBoard(data);
           // You can set this data to state if needed
         } catch (error) {
@@ -38,39 +40,44 @@ const BoardHomePage = () => {
         }
       }
     }
-
+    const fetchPostsData = async () => {
+      if (boardId) {
+        try {
+          const posts = await getPostsByBoardId(Number(boardId));
+          console.log("FETCHED POSTS DATA: ", posts);
+          setPosts(posts);
+        }
+        catch(error) {
+          console.error("Error fetching posts data:", error);
+        }
+      }
+    }
       fetchBoardData();
+      fetchPostsData();
   },[]);
-  console.log("BOARD DATA FOUND: ", board);
 
   // Mock data for feedback posts
   const feedbackPosts = [
     {
       id: 1,
       title: "Add dark mode to the dashboard",
-      description: "It would be great to have a dark mode option for late-night work sessions. The current white interface is quite bright.",
+      message: "It would be great to have a dark mode option for late-night work sessions. The current white interface is quite bright.",
       upvotes: 42,
-      comments: 12,
       category: "Feature Request",
-      status: "In Progress"
     },
     {
       id: 2,
       title: "Mobile app crashes on login",
-      description: "Ever since the last update, the app crashes immediately after I enter my credentials on iOS 17.",
+      message: "Ever since the last update, the app crashes immediately after I enter my credentials on iOS 17.",
       upvotes: 28,
-      comments: 5,
       category: "Bug Report",
-      status: "Under Review"
     },
     {
       id: 3,
       title: "Export feedback as CSV",
-      description: "We need a way to export all the feedback from this board into a spreadsheet for our monthly reports.",
-      upvotes: 15,
-      comments: 3,
+      message: "We need a way to export all the feedback from this board into a spreadsheet for our monthly reports.",
+      upvotes: 0,
       category: "Feature Request",
-      status: "Planned"
     }
   ];
 
@@ -176,14 +183,14 @@ const BoardHomePage = () => {
 
           {/* Feedback List */}
           <div className="space-y-4">
-            {feedbackPosts.map((post) => (
+            {posts.map((post) => (
               <div key={post.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-blue-200 transition-colors flex gap-6">
                 
                 {/* Upvote Button */}
                 <div className="flex flex-col items-center">
                   <button className="p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-500 hover:text-blue-600 border border-gray-100 transition flex flex-col items-center group">
                     <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
-                    <span className="text-sm font-bold mt-1">{post.upvotes}</span>
+                    <span className="text-sm font-bold mt-1">{post.upVotes}</span>
                   </button>
                 </div>
 
@@ -200,8 +207,13 @@ const BoardHomePage = () => {
                     {post.title}
                   </h3>
                   <p className="text-gray-600 line-clamp-2 mb-4">
-                    {post.description}
+                    {post.message}
                   </p>
+
+                  <div className="flex items-center text-gray-400 text-sm font-medium">
+                    <MessageSquare className="w-4 h-4 mr-1.5" />
+                    {post.comments.length} comments
+                  </div>
                 </div>
                 </Link>
 

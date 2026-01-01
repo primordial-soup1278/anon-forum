@@ -19,9 +19,14 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @GetMapping("/{boardId}/get-board-post")
+    @GetMapping("/{boardId}/get-board-posts")
     public List<PostDTO> getBoardPost(@PathVariable Long boardId) {
         return postService.getPostsByBoardId(boardId);
+    }
+
+    @GetMapping("/{postId}/get-post-by-id")
+    public PostDTO getPostById(@PathVariable Long postId) {
+       return postService.getPostById(postId);
     }
 
     @PostMapping("/create-post")

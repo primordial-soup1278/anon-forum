@@ -5,8 +5,9 @@ export interface post {
     authorId: string;
     title: string;
     message: string;
-    upvotes: number;
+    upVotes: number;
     category: string;
+    comments: string[];
 
 }
 export interface createPostRequest {

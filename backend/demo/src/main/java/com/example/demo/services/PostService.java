@@ -27,15 +27,11 @@ public class PostService {
     private PostVoteRepository postVoteRepository;
 
     public List<PostDTO> getPostsByPosterId(Long id, Jwt jwt) {
-
         if(jwt.getSubject().equals(String.valueOf(id))) {
             throw new RuntimeException("Illegal access");
         }
         // Load current user from JWT
         String userID =  jwt.getSubject();
-        /*AppUser currentUser = userRepository.findById(jwt.getSubject())
-                .orElseThrow(() -> new RuntimeException("User not found"));*/
-
         return postRepository.findPostsByAuthorId(id)
                 .stream()
                 .map(post -> toDTO(post, userID))
@@ -47,6 +43,13 @@ public class PostService {
                 .stream()
                 .map(post -> toDTO(post, null))
                 .toList();
+    }
+
+    public PostDTO getPostById(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        return toDTO(post, null);
     }
 
     public void deletePost(Long id) {

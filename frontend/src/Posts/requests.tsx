@@ -27,3 +27,40 @@ export const createPost = async (boardID: number, post : createPostRequest) => {
     return await res.json();
 }
 
+
+export const getPostsByBoardId = async (boardId : number) => {
+
+    console.log("FETCHING POSTS FOR BOARD ID: ", boardId);
+    const res = await fetch(`${import.meta.env.VITE_REACT_APP_POST_BASE_URL}/${boardId}/get-board-posts`,  {
+        method: "GET",
+        headers: {
+            "content-type" : "application/json"
+        }
+    });
+
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Backend error response:", errorText);
+        console.error("Status:", res.status, res.statusText);
+        throw new Error(`Failed to fetch posts: ${res.status} ${res.statusText} - ${errorText}`);
+    }
+
+    return await res.json();
+}
+export const getPostById = async (postId : number) => {
+    const res = await fetch(`${import.meta.env.VITE_REACT_APP_POST_BASE_URL}/${postId}/get-post-by-id`,  {
+        method: "GET",
+        headers: {
+            "content-type" : "application/json"
+        }
+    });
+
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Backend error response:", errorText);
+        console.error("Status:", res.status, res.statusText);
+        throw new Error(`Failed to fetch post: ${res.status} ${res.statusText} - ${errorText}`);
+    }
+
+    return await res.json();
+}
