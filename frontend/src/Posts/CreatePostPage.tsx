@@ -49,6 +49,7 @@ const CreatePostPage = () => {
       };
       console.log("POST DATA TO SEND: ", postData);
       await createPost(Number(boardId), postData);
+      navigate(`/board/${boardId}`);
 
     }
     catch (error) {

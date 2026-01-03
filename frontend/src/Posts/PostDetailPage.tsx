@@ -9,18 +9,22 @@ import {
   User,
   Clock
 } from 'lucide-react';
-import { boardsData } from '../Boards/mockBoards';
 import {useEffect}  from 'react';
 import type { post } from './Post';
-import { getPostById } from './requests';
+import { getPostById, createComment, getCommentsByPostId } from './requests';
 import { getBoardById } from '../Boards/requests';
-import type { board } from '../Boards/Board';
+import type { board, createBoardRequest } from '../Boards/Board';
+import type { comment, createCommentRequest } from './Comment';
+import { useAuth } from '../Auth/AuthContext';
+import { supabase } from '../Auth/supabase';
 const PostDetailPage = () => {
   const { boardId, postId } = useParams();
   const navigate = useNavigate();
+  const { session } = useAuth();
   const [comment, setComment] = useState('');
   const [postData, setPostData] = useState<post>();
   const [board, setBoard] = useState<board>();
+  const [comments, setComments] = useState<comment[]>([]);
   // 1. Find the board context
   //const board = boardsData.find(b => b.id.toString() === boardId);
 
@@ -46,8 +50,21 @@ const PostDetailPage = () => {
         console.error("Error fetching post data:", error);
       }
     };
+    
+    const fetchCommentData = async () => {
+      try {
+        const data = await getCommentsByPostId(Number(postId));
+        console.log("FETCHED COMMENTS DATA: ", data);
+        setComments(data);
+      }
+      catch(error) {
+        console.error("Error fetching comments data:", error);
+      }
+    }
+
     fetchBoardData();
     fetchPostData();
+    fetchCommentData();
 
   },[]);
   // 2. Mock Data for this specific post (In a real app, fetch based on postId)
@@ -66,13 +83,35 @@ const PostDetailPage = () => {
     ]
   };*/
 
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
     console.log(`Submitting comment for post ${postId}: ${comment}`);
     setComment('');
     // Add logic to prepend new comment to list
+
+    try {
+      const commentData : createCommentRequest = {
+        content : comment,
+      }
+      console.log("COMMENT DATA TO SEND: ", commentData);
+      const newComment = await createComment(Number(postId), commentData);
+      setComments((prev) => [newComment, ...prev]);
+
+      setComment('');
+    }
+    catch(error) {
+      console.error("Error creating comment:", error);
+    }
   };
 
+
+  const handleLogout = async () => {
+      const { error } = await supabase.auth.signOut();  
+      if (error) {
+        console.error("Error logging out:", error.message);
+        return;
+      }
+    }
   if (!board) return <div className="p-10 text-center">Board not found.</div>;
   if (!postData) {
     return <div className="p-10 text-center">Loading post...</div>;
@@ -89,9 +128,18 @@ const PostDetailPage = () => {
             </div>
             <span className="text-lg font-bold">Anonymous Feedback</span>
           </Link>
-          <button className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+          { session ? (
+          <button className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          onClick={handleLogout}>
+            Log Out
+          </button>
+          ) : (
+          <button className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          onClick={() => navigate("/login")}>
             Log In
           </button>
+          )
+          }     
         </div>
       </nav>
 
@@ -149,12 +197,8 @@ const PostDetailPage = () => {
                 <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold uppercase rounded-full tracking-wide">
                   {postData.category}
                 </span>
-                <span className="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold uppercase rounded-full tracking-wide flex items-center">
-                  <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
-                  {postData.status}
-                </span>
                 <span className="flex items-center text-gray-400 text-sm font-medium ml-auto">
-                  <Clock className="w-4 h-4 mr-1.5" /> {postData.createdAt}
+                  <Clock className="w-4 h-4 mr-1.5" /> {new Date(postData.createdAt).toLocaleDateString()}
                 </span>
               </div>
 
@@ -171,7 +215,7 @@ const PostDetailPage = () => {
           <div>
             <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
               <MessageSquare className="w-5 h-5 mr-2" />
-              Discussion ({postData.comments.length})
+              Discussion ({comments.length})
             </h3>
 
             {/* Comment Input */}
@@ -189,25 +233,25 @@ const PostDetailPage = () => {
               </button>
             </form>
 
-            {/* Comments List 
+            {/* Comments List */}
             <div className="space-y-4">
-              {postData.comments.map((comment) => (
-                <div key={comment.id} className={`p-6 rounded-2xl border ${comment.isAdmin ? 'bg-blue-50 border-blue-100' : 'bg-white border-gray-100 shadow-sm'}`}>
+              {comments.map((comment) => (
+                <div key={comment.id} className={`p-6 rounded-2xl border  bg-white border-gray-100 shadow-sm`}>
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-2">
-                      <div className={`p-1.5 rounded-lg ${comment.isAdmin ? 'bg-blue-200' : 'bg-gray-100'}`}>
-                        <User className={`w-4 h-4 ${comment.isAdmin ? 'text-blue-700' : 'text-gray-500'}`} />
+                      <div className={`p-1.5 rounded-lg bg-gray-100`}>
+                        <User className={`w-4 h-4 text-gray-500`} />
                       </div>
-                      <span className={`font-bold ${comment.isAdmin ? 'text-blue-700' : 'text-gray-900'}`}>
-                        {comment.user} {comment.isAdmin && <span className="text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded ml-1">Admin</span>}
+                      <span className={`font-bold text-gray-900`}>
+                        {comment.authorId} 
                       </span>
                     </div>
-                    <span className="text-sm text-gray-400">{comment.time}</span>
+                    <span className="text-sm text-gray-400">{new Date(comment.createdAt).toLocaleDateString()}</span>
                   </div>
-                  <p className={`leading-relaxed ${comment.isAdmin ? 'text-blue-900' : 'text-gray-700'}`}>{comment.text}</p>
+                  <p className={`leading-relaxed text-gray-700`}>{comment.content}</p>
                 </div>
               ))}
-            </div>*/}
+            </div>
           </div>
 
         </section>

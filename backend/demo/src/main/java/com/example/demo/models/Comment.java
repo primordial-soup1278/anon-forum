@@ -16,7 +16,7 @@ public class Comment {
     private String content;
 
     // Supabase user id (UUID as string)
-    @Column(nullable = false)
+    @Column(name = "author_id", nullable = false)
     private String authorID;
 
     @ManyToOne(optional = false)
@@ -39,7 +39,7 @@ public class Comment {
     public void setId(Long id) {this.id = id;}
 
     public String getContent() { return content; }
-    public void setContent(String content) { this.content = this.content; }
+    public void setContent(String content) { this.content = content; }
     public Post getPost() { return post;}
     public void setPost(Post post) { this.post = post;}
     public String getAuthorID() { return authorID; }

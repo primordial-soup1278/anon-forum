@@ -9,6 +9,7 @@ import {
   Plus,
   AlertCircle // Added missing icon
 } from 'lucide-react';
+import { supabase } from '../Auth/supabase';
 import { useParams, Link } from 'react-router-dom'; // Added Link for nav
 import type { post } from '../Posts/Post';
 import { useNavigate } from 'react-router-dom';
@@ -16,9 +17,11 @@ import { getBoardById } from './requests';
 import { getPostsByBoardId } from '../Posts/requests';
 
 import type { Board } from './Board';
+import { useAuth } from '../Auth/AuthContext';
 const BoardHomePage = () => {
   const [activeFilter, setActiveFilter] = useState('All');
   const { boardId } = useParams();
+  const { session } = useAuth();
   const navigate = useNavigate();
   const [board, setBoard] = useState<Board>();
   const [posts, setPosts] = useState<post[]>([]);
@@ -93,6 +96,13 @@ const BoardHomePage = () => {
       </div>
     );
   }
+  const handleLogout = async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Error logging out:", error.message);
+        return;
+      }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
@@ -107,11 +117,18 @@ const BoardHomePage = () => {
             <span className="text-lg font-bold text-gray-900">Anonymous Feedback</span>
           </Link>
 
-          <Link to="/login">
-            <button className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
-              Log In
+          { session ? (
+            <button className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+            onClick={handleLogout}>
+              Log Out
             </button>
-          </Link>
+          ) : (
+            <Link to="/login">
+              <button className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                Log In
+              </button>
+            </Link>
+          )}
         </div>
       </nav>
 

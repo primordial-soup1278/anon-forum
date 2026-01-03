@@ -159,11 +159,6 @@ const HomePage = () => {
               <Link to="/about" className="hover:text-gray-900 transition">About</Link>
               <Link to="/privacy-policy" className="hover:text-gray-900 transition">Privacy</Link>
             </div>
-            <div className="flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition"><Twitter className="h-5 w-5" /></a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition"><Instagram className="h-5 w-5" /></a>
-              <a href="#" className="text-gray-400 hover:text-blue-600 transition"><Linkedin className="h-5 w-5" /></a>
-            </div>
           </div>
         </footer>
       </div>

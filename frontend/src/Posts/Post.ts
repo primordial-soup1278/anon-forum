@@ -8,6 +8,7 @@ export interface post {
     upVotes: number;
     category: string;
     comments: string[];
+    createdAt: string;
 
 }
 export interface createPostRequest {

@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import type { createBoardRequest } from './Board';
 import { createBoard } from './requests';
-import type { Board } from './Board';
 
 const CreateBoardPage = () => {
   const [boardName, setBoardName] = useState('');
@@ -67,6 +66,7 @@ const CreateBoardPage = () => {
     }
     finally {
       setIsSubmitting(false);
+      navigate("/browse");
     }
 
     // Simulate API call
