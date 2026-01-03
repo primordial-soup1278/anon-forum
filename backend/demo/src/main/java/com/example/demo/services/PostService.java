@@ -83,37 +83,27 @@ public class PostService {
 
 
     private PostDTO toDTO(Post post, @Nullable String currentUserID) {
-        long upVotes = postVoteRepository.countByPostAndType(post, PostVote.VoteType.UPVOTE);
-        long downVotes = postVoteRepository.countByPostAndType(post, PostVote.VoteType.DOWNVOTE);
-        PostVoteDTO userVote;
-        if (currentUserID == null) {
-            userVote = new PostVoteDTO(post.getId(), false, false);
-        }
-        else {
-            userVote = postVoteRepository.findByUserIDAndPost(currentUserID, post)
-                    .map(v -> new PostVoteDTO(
-                            post.getId(),
-                            v.getType() == PostVote.VoteType.UPVOTE,
-                            v.getType() == PostVote.VoteType.DOWNVOTE
-                    ))
-                    .orElse(new PostVoteDTO(post.getId(), false, false));
-        }
         List<CommentDTO> commentDTOs = post.getComments().stream()
                 .map(c -> new CommentDTO(c.getId(), c.getContent(), c.getCreatedAt(), currentUserID))
                 .toList();
-        return new PostDTO(
-                post.getId(),
-                post.getBoard().getId(),
-                post.getTitle(),
-                post.getMessage(),
-                post.getCreatedAt(),
-                post.getUpdatedAt(),
-                upVotes,
-                downVotes,
-                post.getCategory(),
-                userVote,
-                commentDTOs
-        );
+        PostDTO dto = new PostDTO();
+
+        dto.setId(post.getId());
+        dto.setTitle(post.getTitle());
+        dto.setMessage(post.getMessage());
+        dto.setBoardId(post.getBoard().getId());
+        dto.setCreatedAt(post.getCreatedAt());
+        dto.setUpdatedAt(post.getUpdatedAt());
+        dto.setUpVotes(postVoteRepository.countByPostId(post.getId()));
+        dto.setCategory(post.getCategory());
+        dto.setComments(commentDTOs);
+        if (currentUserID != null) {
+            dto.setUserHasUpvoted(
+                    postVoteRepository.existsByPostIdAndUserId(post.getId(), currentUserID)
+            );
+        }
+
+        return dto;
     }
 
 }

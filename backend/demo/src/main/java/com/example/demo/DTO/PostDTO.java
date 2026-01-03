@@ -12,16 +12,17 @@ public class PostDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private long upVotes;
-    private long downVotes;
-    private PostVoteDTO userVote; // current user's vote
     private List<CommentDTO> comments;
     private String category;
+    private boolean userHasUpvoted;
 
+    public PostDTO() {}
     public PostDTO(Long id, Long boardId, String title, String message,
                    LocalDateTime createdAt, LocalDateTime updatedAt,
-                   long upVotes, long downVotes,
+                   long upVotes,
                    String category,
-                   PostVoteDTO userVote, List<CommentDTO> comments) {
+                   List<CommentDTO> comments,
+                   boolean userHasUpvoted) {
         this.id = id;
         this.boardId = boardId;
         this.title = title;
@@ -29,13 +30,13 @@ public class PostDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.upVotes = upVotes;
-        this.downVotes = downVotes;
-        this.userVote = userVote;
         this.category = category;
         this.comments = comments;
+        this.userHasUpvoted = userHasUpvoted;
     }
 
     // getters
+    public boolean getUserHasUpvoted() {return  userHasUpvoted;}
     public String getCategory() { return this.category; }
     public Long getId() { return id; }
     public Long getBoardId() { return boardId; }
@@ -44,8 +45,17 @@ public class PostDTO {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public long getUpVotes() { return upVotes; }
-    public long getDownVotes() { return downVotes; }
-    public PostVoteDTO getUserVote() { return userVote; }
     public List<CommentDTO> getComments() { return comments; }
+
+    public void setId(Long id) { this.id = id; }
+    public void setBoardId(Long boardId) { this.boardId = boardId; }
+    public void setTitle(String title) { this.title = title; }
+    public void setMessage(String message) { this.message = message; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setUpVotes(long upVotes) { this.upVotes = upVotes; }
+    public void setComments(List<CommentDTO> comments) { this.comments = comments; }
+    public void setCategory(String category) { this.category = category; }
+    public void setUserHasUpvoted(boolean userHasUpvoted) { this.userHasUpvoted = userHasUpvoted; }
 }
 
