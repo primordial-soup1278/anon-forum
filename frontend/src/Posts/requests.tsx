@@ -110,3 +110,29 @@ export const createComment = async (postId : number, comment : createCommentRequ
     }
     return await res.json();
 }
+
+export const voteOnPost = async (postId : number) => {
+    const { data : { session } } = await supabase.auth.getSession();
+
+    if (!session) {
+        throw new Error("User not authenticated");
+    }
+
+    const res = await fetch(`${import.meta.env.VITE_REACT_APP_VOTE_BASE_URL}/${postId}`, {
+        method: "POST",
+        headers: {
+            "content-type" : "application/json",
+            Authorization : `Bearer ${session.access_token}`,
+        }
+    });
+
+    if(!res.ok) {
+        const errorText = await res.text();
+        console.error("Backend error response:", errorText);
+        console.error("Status:", res.status, res.statusText);
+        throw new Error(`Failed to vote on post: ${res.status} ${res.statusText} - ${errorText}`);
+    }
+
+    return await res.json();
+
+}

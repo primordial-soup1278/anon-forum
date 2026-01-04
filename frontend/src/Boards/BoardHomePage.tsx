@@ -25,7 +25,13 @@ const BoardHomePage = () => {
   const navigate = useNavigate();
   const [board, setBoard] = useState<Board>();
   const [posts, setPosts] = useState<post[]>([]);
-  
+
+  // maps postid to upvote count
+  const [upVotes, setUpvotes] = useState<Record<number, number>>({});
+
+  // maps postid to whether user has upvoted the post
+  const [userHasUpvoted, setUserHasUpvoted] = useState<Record<number, boolean>>({});
+
   console.log("BOARD ID FROM PARAMS: ", boardId);
 
   // Find the board info based on the URL ID
@@ -59,31 +65,36 @@ const BoardHomePage = () => {
       fetchPostsData();
   },[]);
 
-  // Mock data for feedback posts
-  const feedbackPosts = [
-    {
-      id: 1,
-      title: "Add dark mode to the dashboard",
-      message: "It would be great to have a dark mode option for late-night work sessions. The current white interface is quite bright.",
-      upvotes: 42,
-      category: "Feature Request",
-    },
-    {
-      id: 2,
-      title: "Mobile app crashes on login",
-      message: "Ever since the last update, the app crashes immediately after I enter my credentials on iOS 17.",
-      upvotes: 28,
-      category: "Bug Report",
-    },
-    {
-      id: 3,
-      title: "Export feedback as CSV",
-      message: "We need a way to export all the feedback from this board into a spreadsheet for our monthly reports.",
-      upvotes: 0,
-      category: "Feature Request",
-    }
-  ];
+  useEffect(() => {
+    if (posts.length > 0) { 
+      const upvotesMap = posts.reduce((acc, post) => {
+        acc[post.id] = post.upVotes;
+        return acc;
+      }, {} as Record<number, number>);
 
+      const userUpvotedMap = posts.reduce((acc, post) => {
+        acc[post.id] = post.userHasUpvoted;
+        return acc;
+      }, {} as Record<number, boolean>);
+
+      setUserHasUpvoted(userUpvotedMap);
+      setUpvotes(upvotesMap);
+
+    }
+
+
+  },[posts])
+
+  const handleVote = async (postId : number) => {
+    try {
+      console.log("Voting on post with ID: ", postId);
+    }
+    catch (error) {
+      console.error("Error voting on post:", error);
+    }
+  }
+
+  
   // Safety check: if board isn't found, show a clean error state
   if (!board) {
     return (
@@ -205,7 +216,8 @@ const BoardHomePage = () => {
                 
                 {/* Upvote Button */}
                 <div className="flex flex-col items-center">
-                  <button className="p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-500 hover:text-blue-600 border border-gray-100 transition flex flex-col items-center group">
+                  <button className="p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-500 hover:text-blue-600 border border-gray-100 transition flex flex-col items-center group"
+                  onClick={() => handleVote(post.id)}>
                     <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
                     <span className="text-sm font-bold mt-1">{post.upVotes}</span>
                   </button>

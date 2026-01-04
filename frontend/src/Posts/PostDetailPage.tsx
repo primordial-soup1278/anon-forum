@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import {useEffect}  from 'react';
 import type { post } from './Post';
-import { getPostById, createComment, getCommentsByPostId } from './requests';
+import { getPostById, createComment, getCommentsByPostId, voteOnPost } from './requests';
 import { getBoardById } from '../Boards/requests';
 import type { board, createBoardRequest } from '../Boards/Board';
 import type { comment, createCommentRequest } from './Comment';
@@ -25,6 +25,10 @@ const PostDetailPage = () => {
   const [postData, setPostData] = useState<post>();
   const [board, setBoard] = useState<board>();
   const [comments, setComments] = useState<comment[]>([]);
+
+  const [upVotes, setUpvotes] = useState<number>(0);
+  const [userHasUpvoted, setUserHasUpvoted] = useState<boolean>(false);
+
   // 1. Find the board context
   //const board = boardsData.find(b => b.id.toString() === boardId);
 
@@ -67,21 +71,14 @@ const PostDetailPage = () => {
     fetchCommentData();
 
   },[]);
-  // 2. Mock Data for this specific post (In a real app, fetch based on postId)
-  /*const post = {
-    id: postId,
-    title: "Add dark mode to the dashboard",
-    message: "It would be great to have a dark mode option for late-night work sessions. The current white interface is quite bright and causes eye strain after long periods. A system-level preference sync would be ideal.",
-    upvotes: 42,
-    category: "Feature Request",
-    status: "In Progress",
-    createdAt: "2 days ago",
-    comments: [
-      { id: 1, user: "ANON", text: "Totally agree, this is my #1 request.", time: "1 day ago" },
-      { id: 2, user: "ANON", text: "Please make it sync with the OS settings if possible!", time: "18 hours ago" },
-      { id: 3, user: "ANON", text: "Thanks for the feedback! We've added this to our roadmap for Q3.", time: "5 hours ago", isAdmin: true },
-    ]
-  };*/
+
+  useEffect(() => {
+    if (postData) {
+      setUpvotes(postData.upVotes);
+      setUserHasUpvoted(postData.userHasUpvoted);
+    }
+  }, [postData]);
+
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -104,14 +101,27 @@ const PostDetailPage = () => {
     }
   };
 
+  const handleUpvote = async () => {
+    try {
+      console.log("Upvoting post with ID: ", postId);
+      const result = await voteOnPost(Number(postId));
+      setUpvotes(result.upVotes);
+      setUserHasUpvoted(result.userHasUpvoted);
+    }
+    catch(error) {
+      console.error("Error upvoting post:", error);
+    }
+  }
+
 
   const handleLogout = async () => {
-      const { error } = await supabase.auth.signOut();  
-      if (error) {
-        console.error("Error logging out:", error.message);
-        return;
-      }
+    const { error } = await supabase.auth.signOut();  
+    if (error) {
+      console.error("Error logging out:", error.message);
+      return;
     }
+  }
+
   if (!board) return <div className="p-10 text-center">Board not found.</div>;
   if (!postData) {
     return <div className="p-10 text-center">Loading post...</div>;
@@ -184,9 +194,14 @@ const PostDetailPage = () => {
           <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-blue-100/20 border border-gray-100 mb-8 flex gap-6">
             {/* Upvote */}
             <div className="flex flex-col items-center">
-              <button className="p-3 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 transition flex flex-col items-center scale-110">
+              <button className={`p-3 rounded-xl border transition flex flex-col items-center scale-110
+                ${userHasUpvoted
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100"}
+                  `} 
+              onClick={handleUpvote}>
                 <ArrowUp className="w-6 h-6" />
-                <span className="text-lg font-bold mt-1">{postData.upVotes}</span>
+                <span className="text-lg font-bold mt-1">{upVotes}</span>
               </button>
             </div>
 

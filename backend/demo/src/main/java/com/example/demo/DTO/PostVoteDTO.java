@@ -1,27 +1,36 @@
 package com.example.demo.DTO;
 
+import com.example.demo.models.Post;
+
 public class PostVoteDTO {
 
-    private final Long postId;
-    private final boolean upvoted;
-    private final boolean downvoted;
+    private Long postId;
+    private Long upVotes;
+    private boolean userUpvoted;
 
-    public PostVoteDTO(Long postId, boolean upvoted, boolean downvoted) {
+    public PostVoteDTO() {}
+    public PostVoteDTO(Long postId, Long upVotes, boolean userUpvoted) {
         this.postId = postId;
-        this.upvoted = upvoted;
-        this.downvoted = downvoted;
+        this.upVotes = upVotes;
+        this.userUpvoted = userUpvoted;
     }
 
     public Long getPostId() {
         return postId;
     }
 
-    public boolean isUpvoted() {
-        return upvoted;
+    public Long getUpVotes() {
+        return upVotes;
     }
 
-    public boolean isDownvoted() {
-        return downvoted;
+    public boolean isUserUpvoted() {
+        return userUpvoted;
     }
 
+    public void setPostId(Long postId) {
+        this.postId = postId;
+    }
+
+    public void setUpVotes(Long upVotes) {this.upVotes = upVotes;}
+    public void setUserUpvoted(boolean userUpvoted) {this.userUpvoted = userUpvoted;}
 }

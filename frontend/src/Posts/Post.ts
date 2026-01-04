@@ -1,7 +1,7 @@
 
 
 export interface post {
-    id?: number;
+    id: number;
     authorId: string;
     title: string;
     message: string;
@@ -9,6 +9,7 @@ export interface post {
     category: string;
     comments: string[];
     createdAt: string;
+    userHasUpvoted: boolean;
 
 }
 export interface createPostRequest {

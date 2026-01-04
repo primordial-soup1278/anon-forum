@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface PostVoteRepository extends JpaRepository<PostVote, Long> {
     Long countByPostId(Long postId);
     boolean existsByPostIdAndUserId(Long postId, String userId);
+    Optional<PostVote> findByPostIdAndUserId(Long postId, String userId);
 }
