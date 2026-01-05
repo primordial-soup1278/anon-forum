@@ -64,3 +64,28 @@ export const getBoardById = async (boardId : number) => {
 
     return await res.json();
 }
+
+export const subscribeToBoard = async (boardId : number) => {
+    const {data : { session }} = await supabase.auth.getSession();
+
+    if(!session) {
+        throw new Error("User not authenticated");
+    }
+
+    const res = await fetch(`${import.meta.env.VITE_REACT_APP_BOARD_BASE_URL}/${boardId}/subscribe`, {
+        method: "POST",
+        headers : {
+            "content-type" : "application/json",
+            "Authorization" : `Bearer ${session.access_token}`,
+        }
+    });
+
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Backend error response:", errorText);
+        console.error("Status:", res.status, res.statusText);
+        throw new Error(`Failed to subscribe to board: ${res.status} ${res.statusText} - ${errorText}`);
+    }
+
+    return await res.json();
+}

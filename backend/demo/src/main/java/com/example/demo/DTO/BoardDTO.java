@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class BoardDTO {
@@ -18,7 +19,7 @@ public class BoardDTO {
     private String description;
 
     /* will contain user id's */
-    private List<String> members;
+    private Set<String> members;
 
     public BoardDTO() {}
 
@@ -29,7 +30,7 @@ public class BoardDTO {
             LocalDateTime updatedAt,
             String name,
             ArrayList<String> categories,
-            ArrayList<String> members,
+            Set<String> members,
             String description)
     {
         this.id = id;
@@ -58,8 +59,8 @@ public class BoardDTO {
     public void setName(String name) {this.name = name;}
     public List<String> getCategories() {return categories;}
     public void setCategories(List<String> categories) {this.categories = categories;}
-    public List<String> getMembers() {return members;}
-    public void setMembers(List<String> members) {this.members = members;}
+    public Set<String> getMembers() {return members;}
+    public void setMembers(Set<String> members) {this.members = members;}
     public void setDescription (String description) {this.description = description;}
     public String getDescription() {return description;}
 }

@@ -5,21 +5,9 @@ import { Link } from "react-router-dom";
 import { useAuth } from '../Auth/AuthContext';
 import { supabase } from '../Auth/supabase';
 import { useEffect, useState } from 'react';
-import { getAllBoards } from './requests';
+import { getAllBoards, subscribeToBoard } from './requests';
 import type { Board } from './Board';
 const BoardBrowsePage = () => {
-  // Mock data for the board cards
-  /*const boards = [
-    { id : 1, title: "Product ideas V.3 2024", description: "Ideas and marketing site.", posts: 43, color: "blue" },
-    { id : 2, title: "Remote Work Policies", description: "Ideas and bugs for marketing site.", posts: 48, color: "green" },
-    { id : 3, title: "Remote Culture Q&AA", description: "Ideas and Iiteen IOS/Android", posts: 135, color: "orange" },
-    { id : 4, title: "Website Improvements Q3", description: "Ideas and bus for marketing site.", posts: 48, color: "blue" },
-    { id : 5, title: "Mobile App Feedback", description: "Dshart losght.on IOS/Android app #mobile", posts: 836, color: "orange" },
-    { id : 6, title: "Office Amenities", description: "Sisccubaights.on IOS/Android app", posts: 305, color: "red" },
-    { id : 7, title: "Obrile App Feedback", description: "Coare undoen.ba.t.rats us wslite", posts: 305, color: "blue" },
-    { id : 8, title: "Office Amenities", description: "Fhhr #mcblet aiits", posts: "1.2K", color: "red" },
-    { id : 9, title: "Community Suggestions", description: "Pe.newicdle sungite ant owidiss", posts: "1.2K", color: "red" },
-  ];*/
   const navigate = useNavigate();
 
   const getColorClasses = (color) => {
@@ -31,9 +19,31 @@ const BoardBrowsePage = () => {
       default: return { badge: "bg-gray-100 text-gray-600", check: "text-gray-600" };
     }
   };
+  const sortOptions = ["Newest", "Oldest", "Most Popular"];
 
   const BoardCard = ({ board }) => {
     const { badge, check } = getColorClasses("blue");
+
+    const [subscribed, setSubscribed] = useState<boolean>(false);
+    const [memberCount, setMemberCount] = useState<number>(0);
+
+    // check if the user is subscribed to this board
+    useEffect(() => {
+      setSubscribed(board.members.includes(supabase.auth.getUser()))
+      setMemberCount(board.members.length);
+    },[]);
+    const handleSubscribe = async (e : React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log(`Subscribed to board with ID: ${board.id}`);
+      try {
+        await subscribeToBoard(board.id);
+      }
+      catch (error) {
+        console.error("Error subscribing to board:", error);
+      }
+    }
+
     
     return (
       <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-100 flex flex-col justify-between">
@@ -45,6 +55,17 @@ const BoardBrowsePage = () => {
             <h3 className="text-lg font-bold text-gray-900 line-clamp-1">{board.name}</h3>
           </div>
           <p className="text-sm text-gray-500 mb-3 line-clamp-2">{board.description}</p>
+        </div>
+
+        <div className="mt-3 flex justify-end">
+          {!subscribed ? (
+            <button
+              className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700`}
+              onClick={handleSubscribe}
+            >
+              Subscribe
+            </button>
+          ) : null}
         </div>
       </div>
     );
@@ -77,6 +98,15 @@ const BoardBrowsePage = () => {
     fetchBoards();
   },[]);
 
+  const [open, setOpen] = useState<boolean>(false);
+  const [selected, setSelected] = useState<string>(sortOptions[0]);
+
+  useEffect(() => {
+
+    console.log("Selected sort option:", selected);
+  }, [selected])
+
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
       
@@ -98,7 +128,8 @@ const BoardBrowsePage = () => {
                 <Plus className="h-4 w-4 mr-1" />
                 <span>Create Board</span>
             </button>
-            {/* Simple User Icon (Placeholder for Login/Profile) 
+
+            { /* Simple User Icon (Placeholder for Login/Profile) 
             <div className="p-2 bg-gray-100 rounded-full">
                 <User className="h-5 w-5 text-gray-600" />
             </div>*/}
@@ -134,31 +165,34 @@ const BoardBrowsePage = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
           
           {/* Search Input (Full Width on Small Screens) */}
-          <div className="relative flex-1 max-w-lg">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <input 
-              type="text" 
-              placeholder="Find boards by topic or tag..." 
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-base transition outline-none"
-            />
-          </div>
 
           {/* Filters (Matching the image layout) */}
-          <div className="flex space-x-3">
-            
-            {/* Categories Dropdown */}
-            <div className="text-sm font-medium text-gray-700 hidden sm:block">Categories</div>
-            <button className="flex items-center bg-white border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-              Most Popular
+          <div className="relative flex space-x-3">
+            {/* TODO: categories are: newest, oldest, most popular */}
+            {/* Sort By Dropdown */}
+            <div className="text-sm font-medium text-gray-700 hidden sm:block">Sort By</div>
+            <button className="flex items-center bg-white border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+            onClick={() => setOpen(!open)}>
+              {selected}
               <ChevronDown className="w-4 h-4 ml-1.5 text-gray-500" />
             </button>
 
-            {/* Sort By Dropdown */}
-            <div className="text-sm font-medium text-gray-700 hidden sm:block">Sort By</div>
-            <button className="flex items-center bg-white border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-              Newest
-              <ChevronDown className="w-4 h-4 ml-1.5 text-gray-500" />
-            </button>
+            {open && (
+              <div className="absolute top-full mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                {sortOptions.map(option => (
+                  <button
+                    key={option}
+                    onClick={() => {
+                      setSelected(option);
+                      setOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    {option}
+                  </button>
+            ))}
+        </div>
+      )}
           </div>
         </div>
 

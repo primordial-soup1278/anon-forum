@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Board {
@@ -30,9 +32,13 @@ public class Board {
     @Column(name = "categories")
     private List<String> categories;
 
-    /* will contain user id's */
+    @CollectionTable(
+            name = "board_members",
+            joinColumns = @JoinColumn(name = "board_id")
+    )
     @ElementCollection
-    private List<String> members;
+    @Column(name = "user_id")
+    private Set<String> members = new HashSet<>();
 
 
     public Long getId() {return id;}
@@ -47,8 +53,8 @@ public class Board {
     public void setName(String name) {this.name = name;}
     public List<String> getCategories() {return categories;}
     public void setCategories(List<String> categories) {this.categories = categories;}
-    public List<String> getMembers() {return members;}
-    public void setMembers(List<String> members) {this.members = members;}
+    public Set<String> getMembers() {return members;}
+    public void setMembers(Set<String> members) {this.members = members;}
     public String getDescription() {return description;}
     public void setDescription(String description) {this.description = description;}
 

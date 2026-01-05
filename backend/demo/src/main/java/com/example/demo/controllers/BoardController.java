@@ -52,6 +52,16 @@ public class BoardController {
             return ResponseEntity.badRequest().build();
         }
     }
+    @PostMapping("{boardId}/subscribe")
+    public ResponseEntity<BoardDTO> subscribe(@PathVariable Long boardId, @AuthenticationPrincipal Jwt jwt) {
+        try {
+           BoardDTO boardDTO = boardService.subscribeToBoard(boardId, jwt);
+           return ResponseEntity.ok(boardDTO);
+        }
+        catch(Exception e) {
+           return ResponseEntity.badRequest().build();
+        }
+    }
 
     @GetMapping("/{id}/get-board")
     public ResponseEntity<BoardDTO> getBoardById(@PathVariable Long id) {

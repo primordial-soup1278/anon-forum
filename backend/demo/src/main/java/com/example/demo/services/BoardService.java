@@ -35,23 +35,6 @@ public class BoardService {
                 .toList();
     }
 
-    public BoardDTO joinBoard(Long boardId, Jwt jwt) {
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new RuntimeException("Board not found"));
-
-        String userID = jwt.getSubject();
-
-        // if board has no members
-        if (board.getMembers() == null) {
-            board.setMembers(new ArrayList<>());
-        }
-
-        board.getMembers().add(userID);
-
-        Board saved = boardRepository.save(board);
-
-        return toDTO(saved);
-    }
 
     public BoardDTO updateBoard(Long id, Jwt jwt, BoardDTO updatedBoard) {
         Board board = boardRepository.findById(id)
@@ -70,6 +53,18 @@ public class BoardService {
     }
 
 
+    public BoardDTO subscribeToBoard(Long id, Jwt jwt) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Board not found"));
+        String userID = jwt.getSubject();
+        if(board.getMembers().contains(userID)) {
+            throw new RuntimeException("User is already subscribed to this board");
+        }
+        board.getMembers().add(userID);
+        Board saved = boardRepository.save(board);
+
+        return toDTO(saved);
+    }
     public BoardDTO createBoard(BoardDTO boardDTO, Jwt jwt) {
 
         Board board = new Board();
@@ -78,6 +73,7 @@ public class BoardService {
         board.setCreatedAt(LocalDateTime.now());
         board.setName(boardDTO.getName());
         board.setCategories(boardDTO.getCategories());
+        boardDTO.getMembers().add(boardDTO.getOwnerId());
         board.setMembers(boardDTO.getMembers());
         board.setDescription(boardDTO.getDescription());
         Board saved = boardRepository.save(board);

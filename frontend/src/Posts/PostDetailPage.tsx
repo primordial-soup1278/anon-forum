@@ -106,7 +106,7 @@ const PostDetailPage = () => {
       console.log("Upvoting post with ID: ", postId);
       const result = await voteOnPost(Number(postId));
       setUpvotes(result.upVotes);
-      setUserHasUpvoted(result.userHasUpvoted);
+      setUserHasUpvoted(result.userUpvoted);
     }
     catch(error) {
       console.error("Error upvoting post:", error);

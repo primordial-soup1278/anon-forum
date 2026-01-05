@@ -83,9 +83,6 @@ const HomePage = () => {
 
         {/* --- Popular Boards Section --- */}
         <section className="px-12 py-16 bg-gray-50">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Popular Boards</h2>
-          </div>
           
           {/* Process Steps */}
           <div className="hidden md:flex justify-center space-x-16 mb-16">
@@ -110,38 +107,6 @@ const HomePage = () => {
           </div>
 
           {/* Board Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Card 1 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
-              <div className="bg-blue-100 p-3 rounded-xl w-fit mb-5 text-blue-600">
-                <MessageCircle className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Product Ideas V4.0</h3>
-              <div className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium w-fit">
-                224 posts
-              </div>
-            </div>
-            {/* Card 2 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
-              <div className="bg-blue-100 p-3 rounded-xl w-fit mb-5 text-blue-600">
-                <Users className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Company Culture Q&A</h3>
-              <div className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium w-fit">
-                135 posts
-              </div>
-            </div>
-            {/* Card 3 */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
-              <div className="bg-blue-100 p-3 rounded-xl w-fit mb-5 text-blue-600">
-                <Lightbulb className="h-6 w-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">Community Suggestions</h3>
-              <div className="bg-gray-100 text-gray-600 px-4 py-1.5 rounded-full text-sm font-medium w-fit">
-                245 posts
-              </div>
-            </div>
-          </div>
         </section>
 
         {/* --- Footer --- */}

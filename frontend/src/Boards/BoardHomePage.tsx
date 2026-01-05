@@ -14,7 +14,7 @@ import { useParams, Link } from 'react-router-dom'; // Added Link for nav
 import type { post } from '../Posts/Post';
 import { useNavigate } from 'react-router-dom';
 import { getBoardById } from './requests';
-import { getPostsByBoardId } from '../Posts/requests';
+import { getPostsByBoardId, voteOnPost } from '../Posts/requests';
 
 import type { Board } from './Board';
 import { useAuth } from '../Auth/AuthContext';
@@ -88,6 +88,16 @@ const BoardHomePage = () => {
   const handleVote = async (postId : number) => {
     try {
       console.log("Voting on post with ID: ", postId);
+      const result = await voteOnPost(postId);
+      console.log("VOTE RESULT:", result);
+      setUpvotes(prev => ({
+        ...prev,
+        [postId]: result.upVotes
+      }));
+      setUserHasUpvoted(prev => ({
+        ...prev,
+        [postId]: result.userUpvoted
+      }));
     }
     catch (error) {
       console.error("Error voting on post:", error);
@@ -219,7 +229,7 @@ const BoardHomePage = () => {
                   <button className="p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-500 hover:text-blue-600 border border-gray-100 transition flex flex-col items-center group"
                   onClick={() => handleVote(post.id)}>
                     <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
-                    <span className="text-sm font-bold mt-1">{post.upVotes}</span>
+                    <span className="text-sm font-bold mt-1">{upVotes[post.id] ?? 0}</span>
                   </button>
                 </div>
 
