@@ -8,7 +8,7 @@ export interface post {
     upVotes: number;
     category: string;
     comments: string[];
-    createdAt: string;
+    createdAt: Date;
     userHasUpvoted: boolean;
 
 }

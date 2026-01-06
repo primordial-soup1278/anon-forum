@@ -7,6 +7,7 @@ export interface Board {
     description : string;
     categories: string[];
     members: string[];
+    createdAt: Date;
 }
 
 // for creating a board

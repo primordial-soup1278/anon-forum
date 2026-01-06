@@ -29,8 +29,14 @@ const BoardBrowsePage = () => {
 
     // check if the user is subscribed to this board
     useEffect(() => {
-      setSubscribed(board.members.includes(supabase.auth.getUser()))
-      setMemberCount(board.members.length);
+      const checkSubscription = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        setSubscribed(board.members.includes(user.id));
+        setMemberCount(board.members.length);
+      }
+      checkSubscription();
     },[]);
     const handleSubscribe = async (e : React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
@@ -38,6 +44,8 @@ const BoardBrowsePage = () => {
       console.log(`Subscribed to board with ID: ${board.id}`);
       try {
         await subscribeToBoard(board.id);
+        setSubscribed(true);
+        setMemberCount(memberCount + 1);
       }
       catch (error) {
         console.error("Error subscribing to board:", error);
@@ -57,7 +65,12 @@ const BoardBrowsePage = () => {
           <p className="text-sm text-gray-500 mb-3 line-clamp-2">{board.description}</p>
         </div>
 
-        <div className="mt-3 flex justify-end">
+        <div className="mt-4 flex items-center justify-between">
+          {/* Member count */}
+          <div className="text-sm text-gray-500 flex items-center">
+            <User className="w-4 h-4 mr-1" />
+            <span>{memberCount} member{memberCount !== 1 && "s"}</span>
+          </div>
           {!subscribed ? (
             <button
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700`}
@@ -106,6 +119,20 @@ const BoardBrowsePage = () => {
     console.log("Selected sort option:", selected);
   }, [selected])
 
+
+  const sortedBoards = [...boardData].sort((a, b) => {
+    switch (selected) {
+      case "Newest":
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case "Oldest":
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case "Most Popular":
+        return b.members.length - a.members.length;
+      default:
+        return 0;
+    }
+
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -198,7 +225,7 @@ const BoardBrowsePage = () => {
 
         {/* --- Boards Grid --- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {boardData.map((board) => (
+          {sortedBoards.map((board) => (
             <Link to={`/board/${board.id}`} key={board.id}>
                 <BoardCard board={board} />
             </Link>
