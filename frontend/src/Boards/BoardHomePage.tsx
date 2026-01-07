@@ -18,13 +18,25 @@ import { getPostsByBoardId, voteOnPost } from '../Posts/requests';
 
 import type { Board } from './Board';
 import { useAuth } from '../Auth/AuthContext';
+export const sortOptions = {
+    MOST_UPVOTED : "Most Upvoted",
+    NEWEST : "Newest",
+    OLDEST : "Oldest",
+} as const;
+
+export type SortOption = typeof sortOptions[keyof typeof sortOptions];
+
 const BoardHomePage = () => {
+
+
   const [activeFilter, setActiveFilter] = useState('All');
   const { boardId } = useParams();
   const { session } = useAuth();
   const navigate = useNavigate();
   const [board, setBoard] = useState<Board>();
   const [posts, setPosts] = useState<post[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
+  const [selected, setSelected] = useState<SortOption>(sortOptions.NEWEST);
 
   // maps postid to upvote count
   const [upVotes, setUpvotes] = useState<Record<number, number>>({});
@@ -85,11 +97,31 @@ const BoardHomePage = () => {
 
   },[posts])
 
+  const sortedPosts = [...posts].sort((a,b) => {
+    switch (selected) {
+      case sortOptions.NEWEST:
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      case sortOptions.OLDEST:
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case sortOptions.MOST_UPVOTED:
+        return b.upVotes - a.upVotes;
+      default:
+        return 0;
+    }
+  })
+
   const handleVote = async (postId : number) => {
     try {
       console.log("Voting on post with ID: ", postId);
       const result = await voteOnPost(postId);
       console.log("VOTE RESULT:", result);
+      setPosts(prev => 
+        prev.map(p => 
+          p.id == postId
+          ? { ...p, upVotes: result.upVotes, userHasUpvoted: result.userUpvoted}
+          : p
+        )
+      );
       setUpvotes(prev => ({
         ...prev,
         [postId]: result.upVotes
@@ -202,26 +234,39 @@ const BoardHomePage = () => {
           
           {/* Sort & Search Bar */}
           <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input 
-                type="text" 
-                placeholder="Search Posts..." 
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition"
-              />
-            </div>
-            <div className="flex items-center space-x-4">
+            
+            <div className="relative flex items-center space-x-4">
               <span className="text-sm font-medium text-gray-500">Sort by:</span>
-              <button className="flex items-center text-sm font-bold text-gray-900 hover:text-blue-600 transition">
-                Most Upvoted
+              <button
+                className="flex items-center text-sm font-bold text-gray-900 hover:text-blue-600 transition"
+                onClick={() => setOpen(o => !o)}
+              >
+                {selected}
                 <ChevronDown className="w-4 h-4 ml-1" />
               </button>
-            </div>
+
+              {open && (
+                <div className="absolute top-full left-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  {Object.values(sortOptions).map(option => (
+                    <button
+                      key={option}
+                      onClick={() => {
+                        setSelected(option);
+                        setOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+              </div>
           </div>
 
           {/* Feedback List */}
           <div className="space-y-4">
-            {posts.map((post) => (
+            {sortedPosts.map((post) => (
               <div key={post.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:border-blue-200 transition-colors flex gap-6">
                 
                 {/* Upvote Button */}

@@ -13,7 +13,7 @@ import {useEffect}  from 'react';
 import type { post } from './Post';
 import { getPostById, createComment, getCommentsByPostId, voteOnPost } from './requests';
 import { getBoardById } from '../Boards/requests';
-import type { board, createBoardRequest } from '../Boards/Board';
+import type { Board } from '../Boards/Board';
 import type { comment, createCommentRequest } from './Comment';
 import { useAuth } from '../Auth/AuthContext';
 import { supabase } from '../Auth/supabase';
@@ -23,7 +23,7 @@ const PostDetailPage = () => {
   const { session } = useAuth();
   const [comment, setComment] = useState('');
   const [postData, setPostData] = useState<post>();
-  const [board, setBoard] = useState<board>();
+  const [board, setBoard] = useState<Board>();
   const [comments, setComments] = useState<comment[]>([]);
 
   const [upVotes, setUpvotes] = useState<number>(0);
@@ -80,7 +80,7 @@ const PostDetailPage = () => {
   }, [postData]);
 
 
-  const handleCommentSubmit = async (e) => {
+  const handleCommentSubmit = async (e : React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     console.log(`Submitting comment for post ${postId}: ${comment}`);
     setComment('');
@@ -168,7 +168,7 @@ const PostDetailPage = () => {
 
           {/* Board Card */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 opacity-80 hover:opacity-100 transition">
-            <h1 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{board.title}</h1>
+            <h1 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">{board.name}</h1>
             <p className="text-sm text-gray-500 mb-4 line-clamp-3">
               {board.description}
             </p>

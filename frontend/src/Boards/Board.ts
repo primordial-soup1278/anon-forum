@@ -1,4 +1,5 @@
 
+import type { post } from "../Posts/Post"
 // for reading a board
 export interface Board {
     id?: number;
@@ -8,6 +9,7 @@ export interface Board {
     categories: string[];
     members: string[];
     createdAt: Date;
+    posts: post[];
 }
 
 // for creating a board
