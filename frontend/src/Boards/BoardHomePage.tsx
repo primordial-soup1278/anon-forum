@@ -27,8 +27,6 @@ export const sortOptions = {
 export type SortOption = typeof sortOptions[keyof typeof sortOptions];
 
 const BoardHomePage = () => {
-
-
   const [activeFilter, setActiveFilter] = useState('All');
   const { boardId } = useParams();
   const { session } = useAuth();
@@ -37,6 +35,7 @@ const BoardHomePage = () => {
   const [posts, setPosts] = useState<post[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<SortOption>(sortOptions.NEWEST);
+  const [selectedCategory, setSelectedCategory] = useState<string>();
 
   // maps postid to upvote count
   const [upVotes, setUpvotes] = useState<Record<number, number>>({});
@@ -97,7 +96,9 @@ const BoardHomePage = () => {
 
   },[posts])
 
-  const sortedPosts = [...posts].sort((a,b) => {
+  const filteredPosts = activeFilter === "All" ? posts : posts.filter(post => post.category === activeFilter)
+
+  const sortedPosts = [...filteredPosts].sort((a,b) => {
     switch (selected) {
       case sortOptions.NEWEST:
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -212,6 +213,16 @@ const BoardHomePage = () => {
               Categories
             </h3>
             <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setActiveFilter('All')}
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+                  activeFilter === 'All'
+                    ? 'bg-blue-100 text-blue-600 border border-blue-200'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                >
+                All
+              </button>
               {board.categories.map((cat) => (
                 <button
                   key={cat}
