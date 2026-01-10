@@ -42,6 +42,7 @@ const BoardHomePage = () => {
   // maps postid to whether user has upvoted the post
   const [userHasUpvoted, setUserHasUpvoted] = useState<Record<number, boolean>>({});
   const [subscribed, setSubscribed] = useState<boolean>(false);
+  const [showSubscribePopup, setShowSubscribePopup] = useState<boolean>(false);
 
   console.log("BOARD ID FROM PARAMS: ", boardId);
 
@@ -200,6 +201,20 @@ const BoardHomePage = () => {
     }
   }
 
+  const handleCreatePost = async (e : React.FormEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    console.log("nav to post creation");
+    if (!subscribed) {
+      // display a pop up that says I need to subscribe before I post on this board
+      setShowSubscribePopup(true);
+      return
+    }
+    else {
+      navigate(`/board/${boardId}/create-post`)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
       
@@ -258,12 +273,11 @@ const BoardHomePage = () => {
             )}
 
             <div className="pt-4 border-t border-gray-100">
-            <Link to={`/board/${boardId}/create-post`} >
-              <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
+              <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-blue-200 hover:bg-blue-700 transition"
+              onClick={handleCreatePost}>
                   <Plus className="w-5 h-5" />
                   <span>Create Post</span>
               </button>
-            </Link>
             </div>
           </div>
 
@@ -385,6 +399,39 @@ const BoardHomePage = () => {
         </section>
 
       </main>
+
+      {showSubscribePopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl p-6 w-[90%] max-w-sm shadow-xl">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">
+              Subscribe required
+            </h2>
+
+            <p className="text-gray-600 mb-4">
+              You must subscribe to this board before creating a post.
+            </p>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowSubscribePopup(false)}
+                className="flex-1 py-2 rounded-lg border border-gray-300 font-semibold hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={(event) => {
+                  handleSubscribe(event);
+                  setShowSubscribePopup(false);
+                }}
+                className="flex-1 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700"
+              >
+                Subscribe
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

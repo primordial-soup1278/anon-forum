@@ -10,6 +10,9 @@ import type { Board } from './Board';
 const BoardBrowsePage = () => {
   const navigate = useNavigate();
 
+  const PAGE_SIZE = 6
+  const [page, setPage] = useState<number>(1);
+
   const getColorClasses = (color) => {
     switch (color) {
       case 'blue': return { badge: "bg-blue-100 text-blue-600", check: "text-blue-600" };
@@ -134,8 +137,13 @@ const BoardBrowsePage = () => {
       default:
         return 0;
     }
-
   });
+
+  const TOTAL_PAGES = Math.ceil(sortedBoards.length / PAGE_SIZE);
+  const paginatedBoards = sortedBoards.slice(
+    (page - 1) * PAGE_SIZE,
+    page * PAGE_SIZE
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
@@ -227,20 +235,64 @@ const BoardBrowsePage = () => {
 
         {/* --- Boards Grid --- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedBoards.map((board) => (
+          {paginatedBoards.map((board) => (
             <Link to={`/board/${board.id}`} key={board.id}>
                 <BoardCard board={board} />
             </Link>
           ))}
         </div>
 
-        {/* --- Load More Button --- */}
-        <div className="flex justify-center mt-10">
-          <button className="text-blue-600 font-semibold hover:underline flex items-center">
-            Load More
-            <ChevronDown className="w-4 h-4 ml-1" />
-          </button>
-        </div>
+        {TOTAL_PAGES > 1 && (
+          <div className="flex justify-center items-center mt-10 space-x-2">
+            {/* Left arrow */}
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className={`p-2 rounded-lg border transition
+                ${
+                  page === 1
+                    ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                    : "text-gray-700 border-gray-300 hover:bg-gray-100"
+                }
+              `}
+            >
+              ‹
+            </button>
+              
+            {/* Page numbers */}
+            {Array.from({ length: TOTAL_PAGES }, (_, i) => i + 1).map((num) => (
+              <button
+                key={num}
+                onClick={() => setPage(num)}
+                disabled={page === num}
+                className={`px-4 py-2 rounded-lg font-semibold transition
+                  ${
+                    page === num
+                      ? "bg-blue-600 text-white cursor-default"
+                      : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                  }
+                `}
+              >
+                {num}
+              </button>
+            ))}
+
+            {/* Right arrow */}
+            <button
+              onClick={() => setPage(p => Math.min(TOTAL_PAGES, p + 1))}
+              disabled={page === TOTAL_PAGES}
+              className={`p-2 rounded-lg border transition
+                ${
+                  page === TOTAL_PAGES 
+                    ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                    : "text-gray-700 border-gray-300 hover:bg-gray-100"
+                }
+              `}
+            >
+              ›
+            </button>
+          </div>
+        )}
       </main>
     </div>
   );
