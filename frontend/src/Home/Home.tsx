@@ -70,15 +70,14 @@ const HomePage = () => {
               </button>
             </div>
           </div>
-          {/* Illustration */}
+          {/* Illustration 
           <div className="md:w-1/2 flex justify-center">
-            {/* REPLACE THIS IMG TAG WITH YOUR ACTUAL SVG/IMAGE ASSET */}
             <img 
               src="https://placehold.co/600x400/f3f4f6/a0aec0?text=Illustration+Placeholder" 
               alt="Team collaboration illustration" 
               className="max-w-full h-auto object-contain"
             />
-          </div>
+          </div>*/}
         </section>
 
         {/* --- Popular Boards Section --- */}

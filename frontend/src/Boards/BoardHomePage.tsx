@@ -13,7 +13,7 @@ import { supabase } from '../Auth/supabase';
 import { useParams, Link } from 'react-router-dom'; // Added Link for nav
 import type { post } from '../Posts/Post';
 import { useNavigate } from 'react-router-dom';
-import { getBoardById } from './requests';
+import { getBoardById, subscribeToBoard, unsubscribeFromBoard } from './requests';
 import { getPostsByBoardId, voteOnPost } from '../Posts/requests';
 
 import type { Board } from './Board';
@@ -35,13 +35,13 @@ const BoardHomePage = () => {
   const [posts, setPosts] = useState<post[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<SortOption>(sortOptions.NEWEST);
-  const [selectedCategory, setSelectedCategory] = useState<string>();
 
   // maps postid to upvote count
   const [upVotes, setUpvotes] = useState<Record<number, number>>({});
 
   // maps postid to whether user has upvoted the post
   const [userHasUpvoted, setUserHasUpvoted] = useState<Record<number, boolean>>({});
+  const [subscribed, setSubscribed] = useState<boolean>(false);
 
   console.log("BOARD ID FROM PARAMS: ", boardId);
 
@@ -75,6 +75,17 @@ const BoardHomePage = () => {
       fetchBoardData();
       fetchPostsData();
   },[]);
+
+  useEffect(() => {
+    const checkSubscription = async (board : Board) => {
+      const { data: { user} } = await supabase.auth.getUser();
+      if (!user) return;
+      setSubscribed(board.members.includes(user.id));
+    }
+    if (board) {
+      checkSubscription(board);
+    }
+  },[board])
 
   useEffect(() => {
     if (posts.length > 0) { 
@@ -136,6 +147,7 @@ const BoardHomePage = () => {
       console.error("Error voting on post:", error);
     }
   }
+  
 
   
   // Safety check: if board isn't found, show a clean error state
@@ -156,6 +168,36 @@ const BoardHomePage = () => {
         console.error("Error logging out:", error.message);
         return;
       }
+  }
+  
+  const handleSubscribe = async (e : React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+
+    if(!session) {
+      navigate("/login");
+      return;
+    }
+
+    console.log("Subscribed to board with id: ", board.id);
+    try {
+      await subscribeToBoard(board.id);
+      setSubscribed(true);
+    }
+    catch (error) {
+      console.error("Error subscribing to board: ", error);
+    }
+  }
+
+  const handleUnsubscribe = async (e : React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    console.log("unsubscribing from board with id: ", board.id);
+    try {
+      await unsubscribeFromBoard(board.id);
+      setSubscribed(false);
+    }
+    catch (error) {
+      console.error("Error unsubscribing to board: ", error);
+    }
   }
 
   return (
@@ -196,6 +238,25 @@ const BoardHomePage = () => {
             <p className="text-sm text-gray-500 mb-4">
               {board.description}
             </p>
+
+            {!subscribed ? (
+              <button
+                className={`w-full mb-3 py-2.5 rounded-xl font-semibold transition
+                     bg-blue-600 text-white hover:bg-blue-700`}
+                     onClick = {handleSubscribe}
+              >
+                Subscribe
+              </button>
+            ) : (
+              <button
+                className={`w-full mb-3 py-2.5 rounded-xl font-semibold transition
+                     bg-red-600 text-white hover:bg-blue-700`}
+                     onClick = {handleUnsubscribe}
+              >
+                Unsubscribe
+              </button>
+            )}
+
             <div className="pt-4 border-t border-gray-100">
             <Link to={`/board/${boardId}/create-post`} >
               <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold flex items-center justify-center space-x-2 shadow-lg shadow-blue-200 hover:bg-blue-700 transition">

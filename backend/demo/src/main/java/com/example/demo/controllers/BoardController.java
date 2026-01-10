@@ -63,6 +63,11 @@ public class BoardController {
         }
     }
 
+    @PostMapping("/{boardId}/unsubscribe")
+    public ResponseEntity<BoardDTO> unsubscribe(@PathVariable Long boardId, @AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(boardService.unsubscribeFromBoard(boardId, jwt));
+    }
+
     @GetMapping("/{id}/get-board")
     public ResponseEntity<BoardDTO> getBoardById(@PathVariable Long id) {
        try {

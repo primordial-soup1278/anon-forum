@@ -41,6 +41,10 @@ const BoardBrowsePage = () => {
     const handleSubscribe = async (e : React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
+      if (!session) {
+        navigate("/login");
+        return;
+      }
       console.log(`Subscribed to board with ID: ${board.id}`);
       try {
         await subscribeToBoard(board.id);
@@ -115,7 +119,6 @@ const BoardBrowsePage = () => {
   const [selected, setSelected] = useState<string>(sortOptions[0]);
 
   useEffect(() => {
-
     console.log("Selected sort option:", selected);
   }, [selected])
 
@@ -195,6 +198,7 @@ const BoardBrowsePage = () => {
 
           {/* Filters (Matching the image layout) */}
           <div className="relative flex space-x-3">
+            {/* Sort By Dropdown */}
             <div className="text-sm font-medium text-gray-700 hidden sm:block">Sort By</div>
             <button className="flex items-center bg-white border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
             onClick={() => setOpen(!open)}>

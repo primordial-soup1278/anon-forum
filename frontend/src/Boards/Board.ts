@@ -2,7 +2,7 @@
 import type { post } from "../Posts/Post"
 // for reading a board
 export interface Board {
-    id?: number;
+    id: number;
     ownerId: string;
     name : string;
     description : string;

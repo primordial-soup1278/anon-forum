@@ -65,6 +65,26 @@ public class BoardService {
 
         return toDTO(saved);
     }
+
+    public BoardDTO unsubscribeFromBoard(Long id, Jwt jwt) {
+        Board board = boardRepository.findById(id).orElseThrow(() -> new RuntimeException("Board not found"));
+        String userID = jwt.getSubject();
+
+        if (!board.getMembers().contains(userID)) {
+            throw new RuntimeException("User is not subscribed to this board");
+        }
+
+        if(board.getOwnerId().equals(userID)) {
+            throw new RuntimeException("User is owner of this board");
+        }
+
+        board.getMembers().remove(userID);
+
+        Board saved = boardRepository.save(board);
+        return toDTO(saved);
+    }
+
+
     public BoardDTO createBoard(BoardDTO boardDTO, Jwt jwt) {
 
         Board board = new Board();
@@ -73,7 +93,7 @@ public class BoardService {
         board.setCreatedAt(LocalDateTime.now());
         board.setName(boardDTO.getName());
         board.setCategories(boardDTO.getCategories());
-        boardDTO.getMembers().add(boardDTO.getOwnerId());
+        boardDTO.getMembers().add(jwt.getSubject());
         board.setMembers(boardDTO.getMembers());
         board.setDescription(boardDTO.getDescription());
         Board saved = boardRepository.save(board);
