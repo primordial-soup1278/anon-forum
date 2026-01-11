@@ -40,8 +40,6 @@ public class BoardController {
 
     @PostMapping("/create-board")
     public ResponseEntity<BoardDTO> createBoard(@RequestBody BoardDTO board, @AuthenticationPrincipal Jwt jwt) {
-        System.out.println("Received DTO: " + board);
-        System.out.println("JWT Subject: " + (jwt != null ? jwt.getSubject() : "null"));
         try {
             BoardDTO boardDTO = boardService.createBoard(board, jwt);
             return ResponseEntity.ok(boardDTO);

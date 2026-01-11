@@ -31,7 +31,6 @@ public class PostController {
 
     @PostMapping("/create-post")
     public ResponseEntity<PostDTO> createPost(@Valid @RequestBody CreatePostRequest req, @AuthenticationPrincipal Jwt jwt) {
-        System.out.println("Got post: " + req);
         return ResponseEntity.ok(
                 postService.createPost(req,jwt)
         );
