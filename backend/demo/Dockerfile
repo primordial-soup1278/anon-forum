@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 
 # make gradlew executable
-RUN CHMOD +x ./gradlew
+RUN chmod +x ./gradlew
 
 RUN ./gradlew bootJar --no-daemon
 # runtime stage
