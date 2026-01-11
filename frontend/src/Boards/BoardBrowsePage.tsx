@@ -48,7 +48,6 @@ const BoardBrowsePage = () => {
         navigate("/login");
         return;
       }
-      console.log(`Subscribed to board with ID: ${board.id}`);
       try {
         await subscribeToBoard(board.id);
         setSubscribed(true);

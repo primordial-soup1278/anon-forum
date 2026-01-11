@@ -391,11 +391,6 @@ const BoardHomePage = () => {
               </div>
             ))}
           </div>
-
-          {/* Load More */}
-          <button className="w-full mt-8 py-4 text-gray-400 font-bold hover:text-gray-600 transition">
-            Load More Feedback
-          </button>
         </section>
 
       </main>

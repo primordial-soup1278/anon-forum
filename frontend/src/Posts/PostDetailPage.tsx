@@ -58,7 +58,6 @@ const PostDetailPage = () => {
     const fetchCommentData = async () => {
       try {
         const data = await getCommentsByPostId(Number(postId));
-        console.log("FETCHED COMMENTS DATA: ", data);
         setComments(data);
       }
       catch(error) {
@@ -82,7 +81,6 @@ const PostDetailPage = () => {
 
   const handleCommentSubmit = async (e : React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(`Submitting comment for post ${postId}: ${comment}`);
     setComment('');
     // Add logic to prepend new comment to list
 
@@ -90,7 +88,6 @@ const PostDetailPage = () => {
       const commentData : createCommentRequest = {
         content : comment,
       }
-      console.log("COMMENT DATA TO SEND: ", commentData);
       const newComment = await createComment(Number(postId), commentData);
       setComments((prev) => [newComment, ...prev]);
 
@@ -103,7 +100,6 @@ const PostDetailPage = () => {
 
   const handleUpvote = async () => {
     try {
-      console.log("Upvoting post with ID: ", postId);
       const result = await voteOnPost(Number(postId));
       setUpvotes(result.upVotes);
       setUserHasUpvoted(result.userUpvoted);
