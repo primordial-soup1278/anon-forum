@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, MessageCircle, Send, ShieldCheck, Info } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 //import { boardsData } from '../Boards/mockBoards'; // Ensure path is correct
 import { getBoardById } from '../Boards/requests';
 import type { createPostRequest } from './Post';
@@ -19,7 +19,6 @@ const CreatePostPage = () => {
       if (boardId) {
         try {
           const data = await getBoardById(Number(boardId));
-          console.log("FETCHED BOARD DATA: ", data);
           setBoard(data);
           // You can set this data to state if needed
         } catch (error) {
@@ -33,22 +32,24 @@ const CreatePostPage = () => {
   // Form State
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('Feature Request');
+  const [category, setCategory] = useState('');
 
   const categories = board?.categories;
 
   const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!category) {
+      alert("Please select a category")
+      return;
+    }
     try {
-      console.log("Submitting Post:", { title, description, category, boardId });
       const postData : createPostRequest = {
         boardId : Number(boardId),
         title : title,
         message : description,
-        category : category,
+        category,
       };
-      console.log("POST DATA TO SEND: ", postData);
-      await createPost(Number(boardId), postData);
+      await createPost(postData);
       navigate(`/board/${boardId}`);
 
     }
@@ -107,7 +108,7 @@ const CreatePostPage = () => {
             <div>
               <textarea 
                 placeholder="Description"
-                rows="5"
+                rows={5}
                 required
                 className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition resize-none"
                 value={description}
@@ -119,11 +120,11 @@ const CreatePostPage = () => {
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-3">Category</label>
               <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
+                {categories?.map((cat) => (
                   <button
                     key={cat}
                     type="button"
-                    onClick={() => setCategory(cat)}
+                    onClick={() => setCategory(cat === category ? '' : cat)}
                     className={`px-4 py-2 rounded-full text-sm font-bold transition ${
                       category === cat 
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' 

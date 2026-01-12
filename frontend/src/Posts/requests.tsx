@@ -1,7 +1,7 @@
 import { supabase } from "../Auth/supabase";
 import type { createPostRequest } from "./Post";
 import type { createCommentRequest } from "./Comment";
-export const createPost = async (boardID: number, post : createPostRequest) => {
+export const createPost = async (post : createPostRequest) => {
     const { data : { session } } = await supabase.auth.getSession();
     console.log("SESSION IN REQ: ", session);
 

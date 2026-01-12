@@ -1,5 +1,5 @@
 import React from 'react';
-import { MessageCircle, Search, ChevronDown, User, Plus, Superscript } from 'lucide-react';
+import { MessageCircle,  ChevronDown, User, Plus} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import { useAuth } from '../Auth/AuthContext';
@@ -13,7 +13,7 @@ const BoardBrowsePage = () => {
   const PAGE_SIZE = 6
   const [page, setPage] = useState<number>(1);
 
-  const getColorClasses = (color) => {
+  const getColorClasses = (color: any) => {
     switch (color) {
       case 'blue': return { badge: "bg-blue-100 text-blue-600", check: "text-blue-600" };
       case 'green': return { badge: "bg-green-100 text-green-600", check: "text-green-600" };
@@ -24,8 +24,8 @@ const BoardBrowsePage = () => {
   };
   const sortOptions = ["Newest", "Oldest", "Most Popular"];
 
-  const BoardCard = ({ board }) => {
-    const { badge, check } = getColorClasses("blue");
+  const BoardCard = ({ board } : {board : Board}) => {
+    const { badge } = getColorClasses("blue");
 
     const [subscribed, setSubscribed] = useState<boolean>(false);
     const [memberCount, setMemberCount] = useState<number>(0);
@@ -195,7 +195,7 @@ const BoardBrowsePage = () => {
         {/* Title and Description */}
         <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Explore Feedback Boards</h1>
         <p className="text-lg text-gray-500 mb-10">
-          Share honest feedback, anonymously. stat meaningful cobesite bettes.
+          Share honest feedback, anonymously.
         </p>
 
         {/* --- Filter and Search Row --- */}

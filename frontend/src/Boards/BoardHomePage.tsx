@@ -4,7 +4,6 @@ import {
   ArrowUp, 
   MessageSquare, 
   Filter, 
-  Search, 
   ChevronDown,
   Plus,
   AlertCircle // Added missing icon
@@ -44,7 +43,6 @@ const BoardHomePage = () => {
   const [subscribed, setSubscribed] = useState<boolean>(false);
   const [showSubscribePopup, setShowSubscribePopup] = useState<boolean>(false);
 
-  console.log("BOARD ID FROM PARAMS: ", boardId);
 
   // Find the board info based on the URL ID
   //const board = boardsData.find(b => b.id.toString() === boardId);
@@ -65,7 +63,6 @@ const BoardHomePage = () => {
       if (boardId) {
         try {
           const posts = await getPostsByBoardId(Number(boardId));
-          console.log("FETCHED POSTS DATA: ", posts);
           setPosts(posts);
         }
         catch(error) {
@@ -125,9 +122,7 @@ const BoardHomePage = () => {
 
   const handleVote = async (postId : number) => {
     try {
-      console.log("Voting on post with ID: ", postId);
       const result = await voteOnPost(postId);
-      console.log("VOTE RESULT:", result);
       setPosts(prev => 
         prev.map(p => 
           p.id == postId
@@ -357,7 +352,12 @@ const BoardHomePage = () => {
                 
                 {/* Upvote Button */}
                 <div className="flex flex-col items-center">
-                  <button className="p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-500 hover:text-blue-600 border border-gray-100 transition flex flex-col items-center group"
+                  <button className={`p-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-500 hover:text-blue-600 border border-gray-100 transition flex flex-col items-center
+                  ${
+                    userHasUpvoted[post.id]
+                    ? 'bg-blue-100 text-blue-600' :
+                    'bg-gray-50 text-gray-500 hover:bg-blue-50 hover:text-blue-600'
+                  }`}
                   onClick={() => handleVote(post.id)}>
                     <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
                     <span className="text-sm font-bold mt-1">{upVotes[post.id] ?? 0}</span>

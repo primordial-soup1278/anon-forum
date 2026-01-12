@@ -1,6 +1,5 @@
-import React from 'react';
 
-import { MessageCircle, Users, Lightbulb, Share2, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { MessageCircle, Users, Lightbulb, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../Auth/AuthContext';
@@ -9,7 +8,6 @@ const HomePage = () => {
     const navigate = useNavigate();
     const { session } = useAuth();
     
-    console.log("Current session:", session);
 
     const handleLogout = async () => {
       const { error } = await supabase.auth.signOut();
@@ -22,7 +20,7 @@ const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
       {/* Main Card Container */}
-      <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-6xl overflow-hidden">
+      <div className="bg-white rounded-4xl shadow-2xl w-full max-w-6xl overflow-hidden">
         
         {/* --- Header --- */}
         <header className="flex items-center justify-between px-8 py-6 border-b border-gray-100">

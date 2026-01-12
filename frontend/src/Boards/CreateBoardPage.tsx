@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
-import { MessageCircle, Check, Plus, X } from 'lucide-react';
+import { MessageCircle, Plus, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import type { createBoardRequest } from './Board';
 import { createBoard } from './requests';
 
 const CreateBoardPage = () => {
   const [boardName, setBoardName] = useState('');
   const [description, setDescription] = useState('');
+/*
   const [customUrl, setCustomUrl] = useState('');
-  const [isUrlAvailable, setIsUrlAvailable] = useState(true);
+  const [isUrlAvailable, setIsUrlAvailable] = useState(true);*/
 
   const navigate = useNavigate();
   
   // Category Logic States
   const [categoryInput, setCategoryInput] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categoryError, setCategoryError] = useState<string>('');
   
-  const [privacy, setPrivacy] = useState('Public');
+  //const [privacy, setPrivacy] = useState('Public');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // --- Category Handlers ---
@@ -32,24 +33,30 @@ const CreateBoardPage = () => {
         selectedCategories.length < 5) {
       setSelectedCategories([...selectedCategories, trimmedInput]);
       setCategoryInput('');
+      setCategoryError('');
     }
   };
 
   const removeCategory = (categoryToRemove : any) => {
     setSelectedCategories(selectedCategories.filter(cat => cat !== categoryToRemove));
+    setCategoryError('');
   };
 
   const handleKeyDown = (e : any) => {
     if (e.key === 'Enter') {
       e.preventDefault(); // Stop form from submitting
-      addCategory();
+      addCategory(e);
     }
   };
 
   const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // require at least 1 category
+    if (selectedCategories.length === 0) {
+      setCategoryError('Please add at least one category.');
+      return;
+    }
     setIsSubmitting(true);
-    console.log('Creating board with:', { boardName, description, customUrl, selectedCategories, privacy });
     
     try {
       const boardData: createBoardRequest = {
@@ -76,11 +83,11 @@ const CreateBoardPage = () => {
     }, 1500);*/
   };
 
-  const handleUrlChange = (e) => {
+  /*const handleUrlChange = (e) => {
     const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
     setCustomUrl(value);
     setIsUrlAvailable(value.length > 3 && value !== 'admin');
-  };
+  };*/
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-sans">
@@ -116,7 +123,7 @@ const CreateBoardPage = () => {
             <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
             <textarea
               id="description"
-              rows="3"
+              rows={3}
               placeholder="A detailed space for the feedback on the redesign."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -158,7 +165,7 @@ const CreateBoardPage = () => {
             </div>
 
             {/* Tags Display Area */}
-            <div className="flex flex-wrap gap-2 min-h-[32px]">
+            <div className="flex flex-wrap gap-2 min-h-8">
               {selectedCategories.map((cat) => (
                 <span
                   key={cat}
@@ -177,6 +184,10 @@ const CreateBoardPage = () => {
               {selectedCategories.length === 0 && (
                 <p className="text-gray-400 text-xs italic">No categories added yet.</p>
               )}
+              {categoryError && (
+                <p className="text-red-500 text-sm w-full mt-1">{categoryError}</p>
+              )}
+              
             </div>
           </div>
 
@@ -194,9 +205,9 @@ const CreateBoardPage = () => {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || !isUrlAvailable}
+              disabled={isSubmitting}
               className={`px-8 py-2.5 rounded-lg font-bold text-white shadow-md transition ${
-                isSubmitting || !isUrlAvailable
+                isSubmitting
                   ? 'bg-blue-400 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700'
               }`}

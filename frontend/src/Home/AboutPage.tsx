@@ -1,4 +1,3 @@
-import React from 'react';
 import { MessageCircle, ShieldCheck, Heart, Users, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

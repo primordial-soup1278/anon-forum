@@ -79,7 +79,7 @@ const PostDetailPage = () => {
   }, [postData]);
 
 
-  const handleCommentSubmit = async (e : React.MouseEvent<HTMLButtonElement>) => {
+  const handleCommentSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setComment('');
     // Add logic to prepend new comment to list
@@ -159,7 +159,6 @@ const PostDetailPage = () => {
             className="flex items-center text-gray-500 hover:text-blue-600 font-medium transition mb-4"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to {board.title}
           </button>
 
           {/* Board Card */}
@@ -169,7 +168,7 @@ const PostDetailPage = () => {
               {board.description}
             </p>
             <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-              {board.posts} Posts
+              Posts
             </div>
           </div>
         </aside>
@@ -187,7 +186,7 @@ const PostDetailPage = () => {
           </button>
 
           {/* The Main Post Card */}
-          <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-blue-100/20 border border-gray-100 mb-8 flex gap-6">
+          <div className="bg-white p-8 rounded-4xl shadow-xl shadow-blue-100/20 border border-gray-100 mb-8 flex gap-6">
             {/* Upvote */}
             <div className="flex flex-col items-center">
               <button className={`p-3 rounded-xl border transition flex flex-col items-center scale-110
@@ -233,7 +232,7 @@ const PostDetailPage = () => {
             <form onSubmit={handleCommentSubmit} className="bg-white p-2 pl-4 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-8 focus-within:ring-2 ring-blue-100 transition">
               <textarea
                 placeholder="Add to the discussion anonymously..."
-                rows="1"
+                rows={1}
                 className="flex-1 bg-transparent outline-none resize-none py-2 text-gray-700 m-1"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
