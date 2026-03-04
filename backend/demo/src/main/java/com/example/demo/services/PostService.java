@@ -27,12 +27,11 @@ public class PostService {
     private PostVoteRepository postVoteRepository;
 
     public List<PostDTO> getPostsByPosterId(Long id, Jwt jwt) {
-        if(jwt.getSubject().equals(String.valueOf(id))) {
+        String userID = jwt.getSubject();
+        if (userID.equals(String.valueOf(id))) {
             throw new RuntimeException("Illegal access");
         }
-        // Load current user from JWT
-        String userID =  jwt.getSubject();
-        return postRepository.findPostsByAuthorId(id)
+        return postRepository.findPostsByAuthorId(userID)
                 .stream()
                 .map(post -> toDTO(post, userID))
                 .toList();
