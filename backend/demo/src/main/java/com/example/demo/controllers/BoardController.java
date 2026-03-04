@@ -72,7 +72,10 @@ public class BoardController {
            BoardDTO board = boardService.getBoard(id).orElseThrow(() -> new RuntimeException("Board not found"));
            return ResponseEntity.ok(board);
        }
-       catch (Exception e) {
+       catch (RuntimeException e) {
+           if (e.getMessage() != null && e.getMessage().contains("not found")) {
+               return ResponseEntity.notFound().build();
+           }
            return ResponseEntity.badRequest().build();
        }
     }
